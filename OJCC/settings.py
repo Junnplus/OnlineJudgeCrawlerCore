@@ -14,6 +14,8 @@ BOT_NAME = 'OJCC'
 SPIDER_MODULES = ['OJCC.spiders']
 NEWSPIDER_MODULE = 'OJCC.spiders'
 
+MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_DATABASE = 'OJCC'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'OJCC (+http://www.yourdomain.com)'
@@ -61,9 +63,10 @@ NEWSPIDER_MODULE = 'OJCC.spiders'
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'OJCC.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+    # 'OJCC.pipelines.SomePipeline': 300,
+    'OJCC.pipelines.MongoPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
