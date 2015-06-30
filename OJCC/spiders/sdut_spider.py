@@ -5,9 +5,11 @@ from OJCC.items import ProblemItem
 class SdutSpider(Spider):
     name = 'sdut'
     allowed_domains = ['acm.sdut.edu.cn']
-    start_urls = [
-        'http://acm.sdut.edu.cn/sdutoj/problem.php?action=showproblem&problemid=1018',
-        'http://acm.sdut.edu.cn/sdutoj/problem.php?action=showproblem&problemid=1017'
+
+    def __init__(self, problem_id=None):
+        self.start_urls = [
+            'http://acm.sdut.edu.cn/sdutoj/problem.php?action=showproblem&problemid=%s'
+                % problem_id
         ]
 
     def parse(self, response):
