@@ -6,7 +6,8 @@ class SdutSpider(Spider):
     name = 'sdut'
     allowed_domains = ['acm.sdut.edu.cn']
 
-    def __init__(self, problem_id=None):
+    def __init__(self, problem_id=None, *args, **kwargs):
+        super(SdutSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.sdut.edu.cn/sdutoj/problem.php?action=showproblem&problemid=%s'
                 % problem_id

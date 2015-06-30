@@ -6,7 +6,8 @@ class PojSpider(Spider):
     name = 'poj'
     allowed_domains = ['poj.org']
 
-    def __init__(self, problem_id=None):
+    def __init__(self, problem_id=None, *args, **kwargs):
+        super(PojSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://poj.org/problem?id=%s' % problem_id
         ]

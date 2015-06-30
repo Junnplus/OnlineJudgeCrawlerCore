@@ -6,7 +6,8 @@ class HduSpider(Spider):
     name = 'hdu'
     allowed_domains = ['acm.hdu.edu.cn']
 
-    def __init__(self, problem_id=None):
+    def __init__(self, problem_id=None, *args, **kwargs):
+        super(HduSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.hdu.edu.cn/showproblem.php?pid=%s' % problem_id
         ]

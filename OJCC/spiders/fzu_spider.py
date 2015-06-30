@@ -6,7 +6,8 @@ class FzuSpider(Spider):
     name = 'fzu'
     allowed_domains = ['acm.fzu.edu.cn']
 
-    def __init__(self, problem_id=None):
+    def __init__(self, problem_id=None, *args, **kwargs):
+        super(FzuSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.fzu.edu.cn/problem.php?pid=%s' % problem_id
         ]
