@@ -17,6 +17,9 @@ NEWSPIDER_MODULE = 'OJCC.spiders'
 MONGO_URI = 'mongodb://localhost:27017/'
 MONGO_DATABASE = 'OJCC'
 
+COOKIES_ENABLED = True
+COOKIES_DEBUG = True
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'OJCC (+http://www.yourdomain.com)'
 
