@@ -47,18 +47,8 @@ class HduSubmitSpider(Spider):
         if source is not None:
             self.source = source
 
-    headers = {
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip,deflate",
-        "Accept-Language": "en-US,en;q=0.8,zh-TW;q=0.6,zh;q=0.4",
-        "Connection": "keep-alive",
-        "Content-Type":" application/x-www-form-urlencoded; charset=UTF-8",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
-    }
-
     def start_requests(self):
         return [FormRequest(self.login_url,
-                headers = self.headers,
                 formdata = {
                         'username': 'sdutacm1',
                         'userpass': 'sdutacm',
@@ -70,7 +60,6 @@ class HduSubmitSpider(Spider):
 
     def after_login(self, response):
         return [FormRequest(self.submit_url,
-                headers = self.headers,
                 formdata = {
                         'problemid': self.problem_id,
                         'language': self.language,
