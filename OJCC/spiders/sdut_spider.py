@@ -42,15 +42,6 @@ class SdutSubmitSpider(Spider):
         "http://acm.sdut.edu.cn/status.php"
     ]
 
-    headers = {
-        "Accept": "*/*",
-        "Accept-Encoding": "gzip,deflate",
-        "Accept-Language": "en-US,en;q=0.8,zh-TW;q=0.6,zh;q=0.4",
-        "Connection": "keep-alive",
-        "Content-Type":" application/x-www-form-urlencoded; charset=UTF-8",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.111 Safari/537.36",
-    }
-
     def __init__(self, problem_id='1000', language='g++', source=None, *args, **kwargs):
         self.problem_id = problem_id
         self.language = language
@@ -59,7 +50,6 @@ class SdutSubmitSpider(Spider):
 
     def start_requests(self):
         return [FormRequest(self.login_url,
-                headers = self.headers,
                 formdata = {
                         'username': 'sdutacm1',
                         'password': 'sdutacm',
@@ -71,7 +61,6 @@ class SdutSubmitSpider(Spider):
 
     def after_login(self, response):
         return [FormRequest(self.submit_url,
-                headers = self.headers,
                 formdata = {
                     'Sub[problem_id]': self.problem_id,
                     'Sub[pro_lang]': self.language,
