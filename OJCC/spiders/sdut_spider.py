@@ -6,7 +6,7 @@ class SdutSpider(Spider):
     name = 'sdut'
     allowed_domains = ['acm.sdut.edu.cn']
 
-    def __init__(self, problem_id=None, *args, **kwargs):
+    def __init__(self, problem_id=1000, *args, **kwargs):
         super(SdutSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.sdut.edu.cn/sdutoj/problem.php?action=showproblem&problemid=%s'
@@ -17,6 +17,8 @@ class SdutSpider(Spider):
         sel = Selector(response)
 
         item = ProblemItem()
+        item['origin_oj'] = 'sdut'
+        item['problem_url'] = response.url
         item['title'] = sel.xpath('//center/h2/text()').extract()[0]
         item['description'] = sel.css('.pro_desc').extract()[0]
         item['input'] = sel.css('.pro_desc').extract()[1]

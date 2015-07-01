@@ -16,6 +16,8 @@ class PojSpider(Spider):
         sel = Selector(response)
 
         item = ProblemItem()
+        item['origin_oj'] = 'poj'
+        item['problem_url'] = response.url
         item['title'] = sel.css('.ptt').xpath('./text()').extract()[0]
         item['description'] = sel.css('.ptx').extract()[0]
         item['input'] = sel.css('.ptx').extract()[1]

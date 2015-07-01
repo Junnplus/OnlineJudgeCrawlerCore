@@ -16,6 +16,8 @@ class FzuSpider(Spider):
         sel = Selector(response)
 
         item = ProblemItem()
+        item['origin_oj'] = 'fzu'
+        item['problem_url'] = response.url
         item['title'] = sel.xpath(
             '//div[contains(@class, "problem_title")]/b/text()').extract()[0]
         item['description'] = sel.css('.pro_desc').extract()[0]

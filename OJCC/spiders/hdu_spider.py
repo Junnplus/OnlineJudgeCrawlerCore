@@ -16,6 +16,8 @@ class HduSpider(Spider):
         sel = Selector(response)
 
         item = ProblemItem()
+        item['origin_oj'] = 'hdu'
+        item['problem_url'] = response.url
         item['title'] = sel.xpath('//h1/text()').extract()[0]
         item['description'] = sel.css('.panel_content').extract()[0]
         item['input'] = sel.css('.panel_content').extract()[1]
