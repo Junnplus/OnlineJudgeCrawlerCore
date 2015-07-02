@@ -35,7 +35,7 @@ class MongoPipeline(object):
     def process_item(self, item, spider):
         collection_name = item.__class__.__name__
         self.db[collection_name].update({'origin_oj': item['origin_oj'],
-            'problem_url': item['problem_url']}, dict(item), upsert=True)
+            'problem_id': item['problem_id']}, dict(item), upsert=True)
         return item
 
 class JsonWriterPipeline(object):
