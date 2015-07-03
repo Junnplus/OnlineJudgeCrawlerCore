@@ -48,7 +48,7 @@ class PojSubmitSpider(CrawlSpider):
     ]
 
     rules = [
-        Rule(link(allow=('/status\?top=[0-9]+'), deny=('status\?bottom=[0-9]+')), callback='parse_start_url')
+        Rule(link(allow=('/status\?top=[0-9]+'), deny=('status\?bottom=[0-9]+')), follow=True, callback='parse_start_url')
     ]
 
     username = 'sdutacm1'
