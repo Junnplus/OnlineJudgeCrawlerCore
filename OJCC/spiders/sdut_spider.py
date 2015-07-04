@@ -42,7 +42,11 @@ class SdutSubmitSpider(Spider):
         "http://acm.sdut.edu.cn/status.php"
     ]
 
-    def __init__(self, problem_id='1000', language='g++', source=None, *args, **kwargs):
+    def __init__(self, 
+        problem_id='1000', 
+        language='g++', 
+        source=None, *args, **kwargs):
+        super(SdutSubmitSpider, self).__init__(*args, **kwargs)
         self.problem_id = problem_id
         self.language = language
         if source is not None:
