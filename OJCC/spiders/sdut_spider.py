@@ -1,4 +1,4 @@
-from scrapy.spiders import Spider
+from scrapy.spiders import Spider, CrawlSpider
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
 from OJCC.items import ProblemItem
