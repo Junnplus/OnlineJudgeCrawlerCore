@@ -30,7 +30,7 @@ class SdutProblemSpider(Spider):
         item['sample_output'] = sel.xpath('//pre').extract()[1]
         yield item
 
-class SdutSubmitSpider(Spider):
+class SdutSubmitSpider(CrawlSpider):
     name = 'sdut_submit'
     allowed_domains = ['acm.sdut.edu.cn']
     login_url = 'http://acm.sdut.edu.cn/sdutoj/login.php?action=login'
