@@ -27,7 +27,7 @@ class HduProblemSpider(Spider):
         item['memory_limit'] = sel.xpath('//b/span/text()').re('Me[\S*\s]*K')[0]
         item['sample_input'] = sel.xpath('//pre').extract()[0]
         item['sample_output'] = sel.xpath('//pre').extract()[1]
-        yield item
+        return item
 
 class HduSubmitSpider(Spider):
     name = 'hdu_submit'
