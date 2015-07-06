@@ -9,6 +9,7 @@ class SdutProblemSpider(Spider):
 
     def __init__(self, problem_id='1000', *args, **kwargs):
         super(SdutProblemSpider, self).__init__(*args, **kwargs)
+        self.problem_id = problem_id
         self.start_urls = [
             'http://acm.sdut.edu.cn/sdutoj/problem.php?action=showproblem&problemid=%s'
                 % problem_id
@@ -42,10 +43,17 @@ class SdutSubmitSpider(CrawlSpider):
         "http://acm.sdut.edu.cn/status.php"
     ]
 
+    rules = [
+        Rule(link(allow=('/status\?top=[0-9]+'), deny=('status\?bottom=[0-9]+')), follow=True, callback='parse_start_url')
+    ]
+
+    username = 'sdutacm1'
+    password = 'sdutacm'
+
     def __init__(self, 
-        problem_id='1000', 
-        language='g++', 
-        source=None, *args, **kwargs):
+            problem_id='1000', 
+            language='g++', 
+            source=None, *args, **kwargs):
         super(SdutSubmitSpider, self).__init__(*args, **kwargs)
         self.problem_id = problem_id
         self.language = language
@@ -55,8 +63,8 @@ class SdutSubmitSpider(CrawlSpider):
     def start_requests(self):
         return [FormRequest(self.login_url,
                 formdata = {
-                        'username': 'sdutacm1',
-                        'password': 'sdutacm',
+                        'username': username,
+                        'password': password,
                         'submit': '++%E7%99%BB+%E5%BD%95++'
                 },
                 callback = self.after_login,
