@@ -33,7 +33,7 @@ class PojProblemSpider(Spider):
         item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
         item['sample_input'] = sel.css('.sio').extract()[0]
         item['sample_output'] = sel.css('.sio').extract()[1]
-        yield item
+        return item
 
 class PojSubmitSpider(CrawlSpider):
     name = 'poj_submit'
