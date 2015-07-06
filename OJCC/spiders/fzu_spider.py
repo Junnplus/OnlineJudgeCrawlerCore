@@ -28,7 +28,7 @@ class FzuProblemSpider(Spider):
         item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
         item['sample_input'] = sel.css('.data').extract()[0]
         item['sample_output'] = sel.css('.data').extract()[1]
-        yield item
+        return item
 
 class FzuSubmitSpider(Spider):
     name = 'fzu_submit'
