@@ -28,7 +28,7 @@ class SdutProblemSpider(Spider):
         item['memory_limit'] = sel.xpath('//a/h5/text()').re('M[\S*\s]*K')[0]
         item['sample_input'] = sel.xpath('//pre').extract()[0]
         item['sample_output'] = sel.xpath('//pre').extract()[1]
-        yield item
+        return item
 
 class SdutSubmitSpider(CrawlSpider):
     name = 'sdut_submit'
