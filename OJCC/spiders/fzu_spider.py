@@ -58,6 +58,8 @@ class FzuSubmitSpider(CrawlSpider):
     username = 'sdutacm1'
     password = 'sdutacm'
 
+    is_judged = False
+
     def __init__(self,
             problem_id='1000',
             language='0',
@@ -102,6 +104,8 @@ class FzuSubmitSpider(CrawlSpider):
             yield self.make_requests_from_url(url)
 
     def parse_start_url(self, response):
+        if self.is_judged:
+            self._rules = []
 
         sel = Selector(response)
 
@@ -123,4 +127,5 @@ class FzuSubmitSpider(CrawlSpider):
                 item['time'] = tr.xpath('.//td')[6].xpath('./text()').extract()
                 item['code_length'] = tr.xpath('.//td/text()').extract()[-1]
                 item['result'] = tr.xpath('.//td/font/text()').extract()[0]
+                self.is_judged = True
                 return item
