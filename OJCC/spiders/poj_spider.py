@@ -4,8 +4,7 @@ from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
 from OJCC.items import ProblemItem, SolutionItem
-from time import sleep
-from datetime import datetime
+import time
 
 class PojProblemSpider(Spider):
     name = 'poj_problem'
@@ -67,7 +66,6 @@ class PojSubmitSpider(CrawlSpider):
             self.source = source
 
     def start_requests(self):
-        self.login_time = datetime.now()
         return [FormRequest(self.login_url,
                 formdata = {
                         'user_id1': self.username,
@@ -78,6 +76,10 @@ class PojSubmitSpider(CrawlSpider):
         )]
 
     def after_login(self, response):
+        self.login_time = time.mktime(time.strptime(\
+                response.headers['Date'], \
+                '%a, %d %b %Y %H:%M:%S %Z')) + (8 * 60 * 60)
+        time.sleep(1)
         return [FormRequest(self.submit_url,
                 formdata = {
                         'problem_id': self.problem_id,
@@ -90,7 +92,7 @@ class PojSubmitSpider(CrawlSpider):
         )]
 
     def after_submit(self, response):
-        sleep(1)
+        time.sleep(1)
         for url in self.start_urls:
             yield self.make_requests_from_url(url)
 
@@ -102,19 +104,18 @@ class PojSubmitSpider(CrawlSpider):
         for tr in sel.xpath('//table')[-1].xpath('.//tr')[1:]:
             user = tr.xpath('.//td/a/text()').extract()[0]
             _submit_time = tr.xpath('.//td/text()').extract()[-1]
-            submit_time = datetime.strptime(_submit_time, '%Y-%m-%d %H:%M:%S')
+            submit_time = time.mktime(\
+                    time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
             if submit_time > self.login_time and \
                     user == self.username:
                 item['origin_oj'] = 'poj'
-                try:
-                    item['problem_id'] = tr.xpath('.//td/a/text()').extract()[1]
-                    item['language'] = tr.xpath('.//td/a/text()').extract()[-1]
-                    item['run_id'] = tr.xpath('.//td/text()').extract()[0]
-                    item['memory'] = tr.xpath('.//td')[4].xpath('./text()').extract()
-                    item['time'] = tr.xpath('.//td')[5].xpath('./text()').extract()
-                    item['submit_time'] = _submit_time
-                    item['code_length'] = tr.xpath('.//td/text()').extract()[-2]
-                    item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
-                    yield item
-                except IndexError:
-                    continue
+                item['problem_id'] = self.problem_id
+                item['language'] = self.language
+                item['submit_time'] = _submit_time
+                item['run_id'] = tr.xpath('.//td/text()').extract()[0]
+
+                item['memory'] = tr.xpath('.//td')[4].xpath('./text()').extract()
+                item['time'] = tr.xpath('.//td')[5].xpath('./text()').extract()
+                item['code_length'] = tr.xpath('.//td/text()').extract()[-2]
+                item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
+                return item
