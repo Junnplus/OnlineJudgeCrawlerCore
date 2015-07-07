@@ -54,6 +54,8 @@ class HduSubmitSpider(CrawlSpider):
     username = 'sdutacm1'
     password = 'sdutacm'
 
+    is_judged = False
+
     def __init__(self,
             problem_id='1000',
             language='0',
@@ -98,6 +100,8 @@ class HduSubmitSpider(CrawlSpider):
             yield self.make_requests_from_url(url)
 
     def parse_start_url(self, response):
+        if is_judged:
+            self._rules = []
 
         sel = Selector(response)
 
@@ -119,4 +123,5 @@ class HduSubmitSpider(CrawlSpider):
                 item['time'] = tr.xpath('.//td')[5].xpath('./text()').extract()
                 item['code_length'] = tr.xpath('.//td/a/text()').extract()[-2]
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
+                self.is_judged = True
                 return item
