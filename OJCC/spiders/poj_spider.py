@@ -89,10 +89,11 @@ class PojSubmitSpider(CrawlSpider):
                         'encoded': '1'
                 },
                 callback = self.after_submit,
+                dont_filter = True
         )]
 
     def after_submit(self, response):
-        time.sleep(1)
+        time.sleep(3)
         for url in self.start_urls:
             yield self.make_requests_from_url(url)
 
