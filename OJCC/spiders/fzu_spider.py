@@ -1,13 +1,18 @@
 from scrapy.spiders import Spider
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem
+from OJCC.items import ProblemItem, SolutionItem
+from base64 import b64decode
+import time
 
 class FzuProblemSpider(Spider):
     name = 'fzu_problem'
     allowed_domains = ['acm.fzu.edu.cn']
 
     def __init__(self, problem_id='1000', *args, **kwargs):
+        self.problem_id = problem_id
         super(FzuSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.fzu.edu.cn/problem.php?pid=%s' % problem_id
@@ -30,7 +35,7 @@ class FzuProblemSpider(Spider):
         item['sample_output'] = sel.css('.data').extract()[1]
         return item
 
-class FzuSubmitSpider(Spider):
+class FzuSubmitSpider(CrawlSpider):
     name = 'fzu_submit'
     allowed_domains = ['acm.fzu.edu.cn']
     login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
@@ -42,7 +47,23 @@ class FzuSubmitSpider(Spider):
             "http://acm.fzu.edu.cn/log.php"
     ]
 
-    def __init__(self, problem_id='1000', language='0', source=None, *args, **kwargs):
+    rules = [
+        Rule(
+            link(
+                allow=('log.php\?&page=[0-9]+'),
+                deny=('log.php\?&page=1$')
+            ), follow=True, callback='parse_start_url')
+    ]
+
+    username = 'sdutacm1'
+    password = 'sdutacm'
+
+    def __init__(self,
+            problem_id='1000',
+            language='0',
+            source=None, *args, **kwargs):
+        super(FzuSubmitSpider, self).__init__(*args, **kwargs)
+
         self.problem_id = problem_id
         self.language = language
         if source is not None:
@@ -51,8 +72,8 @@ class FzuSubmitSpider(Spider):
     def start_requests(self):
         return [FormRequest(self.login_url,
                 formdata = {
-                        'uname': 'sdutacm1',
-                        'upassword': 'sdutacm',
+                        'uname': self.username,
+                        'upassword': self.password,
                         'submit': 'Submit',
                 },
                 callback = self.after_login,
@@ -60,11 +81,15 @@ class FzuSubmitSpider(Spider):
         )]
 
     def after_login(self, response):
+        self.login_time = time.mktime(time.strptime(\
+                response.headers['Date'], \
+                '%a, %d %b %Y %H:%M:%S %Z')) + (8 * 60 * 60)
+        time.sleep(1)
         return [FormRequest(self.submit_url,
                 formdata = {
                         'pid': self.problem_id,
                         'lang': self.language,
-                        'code': self.source,
+                        'code': b64decode(self.source),
                         'submit': 'Submit',
                 },
                 callback = self.after_submit,
@@ -72,5 +97,30 @@ class FzuSubmitSpider(Spider):
         )]
 
     def after_submit(self, response):
+        time.sleep(10)
         for url in self.start_urls :
             yield self.make_requests_from_url(url)
+
+    def parse_start_url(self, response):
+
+        sel = Selector(response)
+
+        item = SolutionItem()
+        for tr in sel.xpath('//table/tr')[1:]:
+            user = tr.xpath('.//td/a/text()').extract()[-1]
+            _submit_time = tr.xpath('.//td/text()').extract()[1]
+            submit_time = time.mktime(\
+                    time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
+            if submit_time > self.login_time and \
+                    user == self.username:
+                item['origin_oj'] = 'hdu'
+                item['problem_id'] = self.problem_id
+                item['language'] = self.language
+                item['submit_time'] = _submit_time
+                item['run_id'] = tr.xpath('.//td/text()').extract()[0]
+
+                item['memory'] = tr.xpath('.//td')[5].xpath('./text()').extract()
+                item['time'] = tr.xpath('.//td')[6].xpath('./text()').extract()
+                item['code_length'] = tr.xpath('.//td/text()').extract()[-1]
+                item['result'] = tr.xpath('.//td/font/text()').extract()[0]
+                return item
