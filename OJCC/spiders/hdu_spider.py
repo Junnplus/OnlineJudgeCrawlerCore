@@ -1,7 +1,11 @@
 from scrapy.spiders import Spider
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem
+from OJCC.items import ProblemItem, SolutionItem
+from base64 import b64decode
+import time
 
 class HduProblemSpider(Spider):
     name = 'hdu_problem'
@@ -29,7 +33,7 @@ class HduProblemSpider(Spider):
         item['sample_output'] = sel.xpath('//pre').extract()[1]
         return item
 
-class HduSubmitSpider(Spider):
+class HduSubmitSpider(CrawlSpider):
     name = 'hdu_submit'
     allowed_domains = ['acm.hdu.edu.cn']
     login_url = 'http://acm.hdu.edu.cn/userloginex.php?action=login'
@@ -41,7 +45,19 @@ class HduSubmitSpider(Spider):
         'http://acm.hdu.edu.cn/status.php'
     ]
 
-    def __init__(self, problem_id='1000', language='0', source=None, *args, **kwargs):
+    rules = [
+        Rule(link(allow=('/status.php\?first\S*status'), deny=('status\?bottom=[0-9]+')), follow=True, callback='parse_start_url')
+    ]
+
+    username = 'sdutacm1'
+    password = 'sdutacm'
+
+    def __init__(self,
+            problem_id='1000',
+            language='0',
+            source=None, *args, **kwargs):
+        super(HduSubmitSpider, self).__init__(*args, **kwargs)
+
         self.problem_id = problem_id
         self.language = language
         if source is not None:
@@ -50,8 +66,8 @@ class HduSubmitSpider(Spider):
     def start_requests(self):
         return [FormRequest(self.login_url,
                 formdata = {
-                        'username': 'sdutacm1',
-                        'userpass': 'sdutacm',
+                        'username': self.username,
+                        'userpass': self.password,
                         'login': 'Sign+In',
                 },
                 callback = self.after_login,
@@ -59,11 +75,15 @@ class HduSubmitSpider(Spider):
         )]
 
     def after_login(self, response):
+        self.login_time = time.mktime(time.strptime(\
+                response.headers['Date'], \
+                '%a, %d %b %Y %H:%M:%S %Z')) + (8 * 60 * 60)
+        time.sleep(1)
         return [FormRequest(self.submit_url,
                 formdata = {
                         'problemid': self.problem_id,
                         'language': self.language,
-                        'usercode': self.source,
+                        'usercode': b64decode(self.source),
                         'check': '0'
                 },
                 callback = self.after_submit,
@@ -71,5 +91,30 @@ class HduSubmitSpider(Spider):
         )]
 
     def after_submit(self, response):
+        time.sleep(3)
         for url in self.start_urls :
             yield self.make_requests_from_url(url)
+
+    def parse_start_url(self, response):
+
+        sel = Selector(response)
+
+        item = SolutionItem()
+        for tr in sel.xpath('//table[@class="table_text"]/tr')[1:]:
+            user = tr.xpath('.//td/a/text()').extract()[-1]
+            _submit_time = tr.xpath('.//td/text()').extract()[1]
+            submit_time = time.mktime(\
+                    time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
+            if submit_time > self.login_time and \
+                    user == self.username:
+                item['origin_oj'] = 'hdu'
+                item['problem_id'] = self.problem_id
+                item['language'] = self.language
+                item['submit_time'] = _submit_time
+                item['run_id'] = tr.xpath('.//td/text()').extract()[0]
+
+                item['memory'] = tr.xpath('.//td')[4].xpath('./text()').extract()
+                item['time'] = tr.xpath('.//td')[5].xpath('./text()').extract()
+                item['code_length'] = tr.xpath('.//td/a/text()').extract()[-2]
+                item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
+                return item
