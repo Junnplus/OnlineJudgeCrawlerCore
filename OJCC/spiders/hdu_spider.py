@@ -12,6 +12,7 @@ class HduProblemSpider(Spider):
     allowed_domains = ['acm.hdu.edu.cn']
 
     def __init__(self, problem_id='1000', *args, **kwargs):
+        self.problem_id = problem_id
         super(HduSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.hdu.edu.cn/showproblem.php?pid=%s' % problem_id
@@ -22,6 +23,7 @@ class HduProblemSpider(Spider):
 
         item = ProblemItem()
         item['origin_oj'] = 'hdu'
+        item['problem_id'] = self.problem_id
         item['problem_url'] = response.url
         item['title'] = sel.xpath('//h1/text()').extract()[0]
         item['description'] = sel.css('.panel_content').extract()[0]
