@@ -49,8 +49,13 @@ class SdutSubmitSpider(CrawlSpider):
     ]
 
     rules = [
-        Rule(link(allow=('status.php\?page=[0-9]+\S*'), \
-            deny=(u'上一页')), follow=True, callback='parse_start_url')
+        Rule(
+            link(
+                allow=('status.php\?page=[0-9]+\S*'), \
+                deny=('status.php\?page=1&\S*'),
+                unique=True
+            ),
+            follow=True, callback='parse_start_url')
     ]
 
     username = 'sdutacm1'
@@ -117,6 +122,6 @@ class SdutSubmitSpider(CrawlSpider):
 
                 item['memory'] = tr.xpath('.//td')[4].xpath('./text()').extract()
                 item['time'] = tr.xpath('.//td')[5].xpath('./text()').extract()
-                item['code_length'] = tr.xpath('.//td/a/text()').extract()[-2]
+                item['code_length'] = tr.xpath('.//td/text()').extract()[-2]
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
                 return item
