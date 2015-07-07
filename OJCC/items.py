@@ -21,3 +21,16 @@ class ProblemItem(scrapy.Item):
     sample_output = scrapy.Field()
     hint = scrapy.Field()
     source = scrapy.Field()
+
+class SolutionItem(scrapy.Item):
+
+    origin_oj = scrapy.Field()
+    problem_id = scrapy.Field()
+    run_id = scrapy.Field()
+    source = scrapy.Field()
+    result = scrapy.Field()
+    memory = scrapy.Field()
+    time = scrapy.Field()
+    language = scrapy.Field()
+    code_length = scrapy.Field()
+    submit_time = scrapy.Field()
