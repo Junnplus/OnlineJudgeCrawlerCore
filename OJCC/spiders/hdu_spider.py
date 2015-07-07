@@ -48,7 +48,7 @@ class HduSubmitSpider(CrawlSpider):
     ]
 
     rules = [
-        Rule(link(allow=('/status.php\?first\S*status'), follow=True, callback='parse_start_url')
+        Rule(link(allow=('/status.php\?first\S*status')), follow=True, callback='parse_start_url')
     ]
 
     username = 'sdutacm1'
