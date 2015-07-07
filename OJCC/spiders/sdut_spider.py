@@ -94,7 +94,7 @@ class SdutSubmitSpider(CrawlSpider):
 
     def after_submit(self, response):
         time.sleep(3)
-        for url in self.start_urls :
+        for url in self.start_urls:
             yield self.make_requests_from_url(url)
 
     def parse_start_url(self, response):
