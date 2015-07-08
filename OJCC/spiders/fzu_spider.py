@@ -75,8 +75,14 @@ class FzuProblemSpider(Spider):
         item['title'] = sel.xpath(
             '//div[contains(@class, "problem_title")]/b/text()').extract()[0]
         item['description'] = sel.css('.pro_desc').extract()[0]
-        item['input'] = sel.css('.pro_desc').extract()[1]
-        item['output'] = sel.css('.pro_desc').extract()[2]
+        try:
+            item['input'] = sel.css('.pro_desc').extract()[1]
+        except:
+            item['input'] = []
+        try:
+            item['output'] = sel.css('.pro_desc').extract()[2]
+        except:
+            item['output'] = []
         item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0]
         item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
         item['sample_input'] = sel.css('.data').extract()[0]
@@ -171,8 +177,14 @@ class FzuSubmitSpider(CrawlSpider):
                 item['submit_time'] = _submit_time
                 item['run_id'] = tr.xpath('.//td/text()').extract()[0]
 
-                item['memory'] = tr.xpath('.//td')[5].xpath('./text()').extract()
-                item['time'] = tr.xpath('.//td')[6].xpath('./text()').extract()
+                try:
+                    item['memory'] = \
+                    tr.xpath('.//td')[5].xpath('./text()').extract()[0]
+                    item['time'] = \
+                    tr.xpath('.//td')[6].xpath('./text()').extract()[0]
+                except:
+                    item['memory'] = []
+                    item['time'] = []
                 item['code_length'] = tr.xpath('.//td/text()').extract()[-1]
                 item['result'] = tr.xpath('.//td/font/text()').extract()[0]
                 self.is_judged = True
