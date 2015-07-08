@@ -109,7 +109,7 @@ class SdutSubmitSpider(CrawlSpider):
                 formdata = {
                     'Sub[problem_id]': self.problem_id,
                     'Sub[pro_lang]': self.language,
-                    'Sub[sub_code]': b64decode(self.source),
+                    'Sub[code]': b64decode(self.source)
                 },
                 callback = self.after_submit,
                 dont_filter = True
