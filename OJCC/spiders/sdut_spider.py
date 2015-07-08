@@ -8,7 +8,7 @@ from OJCC.items import ProblemItem, SolutionItem
 from base64 import b64decode
 import time
 
-lANGUAGE = {
+LANGUAGE = {
         'gcc': 'gcc',
         'g++': 'g++',
         'java': 'java',
