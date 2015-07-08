@@ -39,13 +39,19 @@ def problem_crawl(origin_oj, problem_id):
 
 > 提交的代码需要通过 [base64 编码](http://tool.chinaz.com/Tools/Base64.aspx)
 
-支持语言
+各大OJ支持语言
 
-language | origin_oj 
+language | origin_oj
 -------- | ---------
 gcc      | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
 g++      | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
 java     | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
+pascal   | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
+c        | `POJ`, `HDU_OJ`, `FZU_OJ`
+c++      | `POJ`, `HDU_OJ`, `FZU_OJ`
+fortran  | `POJ`
+c#       | `HDU_OJ`
+
 
 #### Command
 ```shell
