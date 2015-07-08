@@ -166,8 +166,15 @@ class HduSubmitSpider(CrawlSpider):
                 item['submit_time'] = _submit_time
                 item['run_id'] = tr.xpath('.//td/text()').extract()[0]
 
-                item['memory'] = tr.xpath('.//td')[4].xpath('./text()').extract()
-                item['time'] = tr.xpath('.//td')[5].xpath('./text()').extract()
+                try:
+                    item['memory'] = \
+                        tr.xpath('.//td')[4].xpath('./text()').extract()[0]
+                    item['time'] = \
+                        tr.xpath('.//td')[5].xpath('./text()').extract()[0]
+                except:
+                    item['memory'] = []
+                    item['time'] = []
+
                 item['code_length'] = tr.xpath('.//td/a/text()').extract()[-2]
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
                 self.is_judged = True
