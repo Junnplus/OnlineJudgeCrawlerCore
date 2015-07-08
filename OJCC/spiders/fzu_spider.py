@@ -22,7 +22,7 @@ class FzuProblemSpider(Spider):
 
     def __init__(self, problem_id='1000', *args, **kwargs):
         self.problem_id = problem_id
-        super(FzuSpider, self).__init__(*args, **kwargs)
+        super(FzuProblemSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.fzu.edu.cn/problem.php?pid=%s' % problem_id
         ]
