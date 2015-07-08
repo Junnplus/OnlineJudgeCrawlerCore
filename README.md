@@ -3,6 +3,7 @@
 ## Features
 
 - Random UserAgent Support
+- Simulate Login
 
 ## Install
 
