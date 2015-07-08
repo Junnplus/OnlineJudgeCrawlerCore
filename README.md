@@ -60,16 +60,12 @@ scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
 
 各大OJ语言支持
 
-language | origin_oj
--------- | ---------
-gcc      | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
-g++      | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
-java     | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
-pascal   | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
-c        | `POJ`, `HDU_OJ`, `FZU_OJ`
-c++      | `POJ`, `HDU_OJ`, `FZU_OJ`
-fortran  | `POJ`
-c#       | `HDU_OJ`
+origin_oj | language
+--------- | ---------
+POJ       | `gcc`, `g++`, `java`, `pascal`, `c`, `c++`, `fortran`
+HDU_OJ    | `gcc`, `g++`, `java`, `pascal`, `c`, `c++`, `c#`
+SDUT_OJ   | `gcc`, `g++`, `java`, `pascal`, `go`, `lua`, `dao`, `perl`, `ruby`, `haskell`, `python2`, `python3`
+FZU_OJ    | `gcc`, `g++`, `java`, `pascal`, `c`, `c++`
 
 Example:
 ```shell
