@@ -20,7 +20,7 @@ source /usr/bin/virtualenvwrapper.sh
 ### Problem Crawl
 #### Command
 ```shell
-scrapy crawl `origin_oj`_problrm -a problem_id='1000'
+scrapy crawl `origin_oj`_problrm -a problem_id=''
 ```
 
 #### Script
