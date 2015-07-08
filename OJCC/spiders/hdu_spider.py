@@ -23,7 +23,7 @@ class HduProblemSpider(Spider):
 
     def __init__(self, problem_id='1000', *args, **kwargs):
         self.problem_id = problem_id
-        super(HduSpider, self).__init__(*args, **kwargs)
+        super(HduProblemSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://acm.hdu.edu.cn/showproblem.php?pid=%s' % problem_id
         ]
