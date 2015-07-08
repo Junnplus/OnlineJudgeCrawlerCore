@@ -22,7 +22,7 @@ class PojProblemSpider(Spider):
 
     def __init__(self, problem_id='1000', *args, **kwargs):
         self.problem_id = problem_id
-        super(PojSpider, self).__init__(*args, **kwargs)
+        super(PojProblemSpider, self).__init__(*args, **kwargs)
         self.start_urls = [
             'http://poj.org/problem?id=%s' % problem_id
         ]
