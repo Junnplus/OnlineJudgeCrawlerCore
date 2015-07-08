@@ -58,7 +58,7 @@ scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
     - language
     - source `base64 编码`
 
-各大OJ支持语言
+各大OJ语言支持
 
 language | origin_oj
 -------- | ---------
