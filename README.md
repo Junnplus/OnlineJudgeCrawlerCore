@@ -54,8 +54,8 @@ def problem_crawl(origin_oj, problem_id):
 scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
 ```
 + argument
-    - problem_id
-    - language
+    - problem_id 
+    - language `default: gcc`
     - source `base64 编码`
 
 各大OJ语言支持
