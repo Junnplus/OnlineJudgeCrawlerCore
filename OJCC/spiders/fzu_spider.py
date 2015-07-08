@@ -70,6 +70,7 @@ class FzuProblemSpider(Spider):
 
         item = ProblemItem()
         item['origin_oj'] = 'fzu'
+        item['problem_id'] = self.problem_id
         item['problem_url'] = response.url
         item['title'] = sel.xpath(
             '//div[contains(@class, "problem_title")]/b/text()').extract()[0]
