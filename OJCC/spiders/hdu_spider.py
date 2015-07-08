@@ -17,6 +17,44 @@ LANGUAGE = {
         'c#': '6'
     }
 
+class HduInitSpider(CrawlSpider):
+    name = 'hdu_init'
+    allowed_domains = ['acm.hdu.edu.cn']
+
+    start_urls = [
+            'http://acm.hdu.edu.cn/listproblem.php'
+    ]
+
+    rules = [
+        Rule(
+            link(
+                allow=('listproblem.php\?vol=[0-9]+'),
+                unique=True
+            )),
+        Rule(
+            link(
+                allow=('showproblem.php\?pid=[0-9]+')
+            ), callback='problem_item')
+    ]
+
+    def problem_item(self, response):
+        sel = Selector(response)
+
+        item = ProblemItem()
+        print response
+        item['origin_oj'] = 'poj'
+        item['problem_id'] = response.url[-4:]
+        item['problem_url'] = response.url
+        item['title'] = sel.css('.ptt').xpath('./text()').extract()[0]
+        item['description'] = sel.css('.ptx').extract()[0]
+        item['input'] = sel.css('.ptx').extract()[1]
+        item['output'] = sel.css('.ptx').extract()[2]
+        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0]
+        item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
+        item['sample_input'] = sel.css('.sio').extract()[0]
+        item['sample_output'] = sel.css('.sio').extract()[1]
+        return item
+
 class HduProblemSpider(Spider):
     name = 'hdu_problem'
     allowed_domains = ['acm.hdu.edu.cn']
