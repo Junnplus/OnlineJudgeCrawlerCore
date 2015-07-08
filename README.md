@@ -17,6 +17,20 @@ source /usr/bin/virtualenvwrapper.sh
 
 ## Usage
 
+### Problem Init
+
+> 抓取Origin_OJ现有的所有题目
+
+#### Command
+```shell
+scrapy crawl `origin_oj`_init
+```
+
+Example:
+```shell
+scrapy crawl poj_init
+```
+
 ### Problem Crawl
 #### Command
 ```shell
