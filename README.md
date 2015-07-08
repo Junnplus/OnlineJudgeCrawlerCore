@@ -55,7 +55,7 @@ scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
 ```
 + argument
     - problem_id 
-    - language `default: gcc`
+    - language `default: g++`
     - source `base64 编码`
 
 各大OJ语言支持
