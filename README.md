@@ -25,6 +25,11 @@ scrapy crawl `origin_oj`_problrm -a problem_id=''
 + argument
     - problem_id
 
+Example:
+```shell
+scrapy crawl poj_problrm -a problem_id='1000'
+```
+
 #### Script
 ```python
 from scrapy.crawler import CrawlerProcess
@@ -65,6 +70,11 @@ c        | `POJ`, `HDU_OJ`, `FZU_OJ`
 c++      | `POJ`, `HDU_OJ`, `FZU_OJ`
 fortran  | `POJ`
 c#       | `HDU_OJ`
+
+Example:
+```shell
+scrapy crawl `origin_oj`_submit -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ=='
+```
 
 #### Script
 ```python
