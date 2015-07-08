@@ -43,9 +43,9 @@ def problem_crawl(origin_oj, problem_id):
 
 language | origin_oj 
 -------- | ---------
-gcc      | POJ, HDU_OJ, SDUT_OJ, FZU_OJ
-g++      | POJ, HDU_OJ, SDUT_OJ, FZU_OJ
-java     | POJ, HDU_OJ, SDUT_OJ, FZU_OJ
+gcc      | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
+g++      | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
+java     | `POJ`, `HDU_OJ`, `SDUT_OJ`, `FZU_OJ`
 
 #### Command
 ```shell
