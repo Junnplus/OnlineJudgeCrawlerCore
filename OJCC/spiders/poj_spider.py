@@ -6,6 +6,16 @@ from scrapy.selector import Selector
 from OJCC.items import ProblemItem, SolutionItem
 import time
 
+LANGUAGE = {
+        'g++': '0',
+        'gcc': '1',
+        'java': '2',
+        'pascal': '3',
+        'c++': '4',
+        'c': '5',
+        'fortran': '6'
+    }
+
 class PojProblemSpider(Spider):
     name = 'poj_problem'
     allowed_domains = ['poj.org']
