@@ -7,6 +7,15 @@ from OJCC.items import ProblemItem, SolutionItem
 from base64 import b64decode
 import time
 
+LANGUAGE = {
+        'g++': '0',
+        'gcc': '1',
+        'pascal': '2',
+        'java': '3',
+        'c++': '4',
+        'c': '5'
+    }
+
 class FzuProblemSpider(Spider):
     name = 'fzu_problem'
     allowed_domains = ['acm.fzu.edu.cn']
