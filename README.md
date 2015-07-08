@@ -1,2 +1,1 @@
-# OJCC
-OJ_Crawler_Core
+# OnlineJudge_Crawler_Core
