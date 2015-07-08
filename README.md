@@ -42,6 +42,17 @@ def problem_crawl(origin_oj, problem_id):
 
 ### Code Submit
 
+> 提交的代码需要通过 [base64 编码](http://tool.chinaz.com/Tools/Base64.aspx)
+
+#### Command
+```shell
+scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
+```
++ argument
+    - problem_id
+    - language
+    - source `base64 编码`
+
 各大OJ支持语言
 
 language | origin_oj
@@ -54,17 +65,6 @@ c        | `POJ`, `HDU_OJ`, `FZU_OJ`
 c++      | `POJ`, `HDU_OJ`, `FZU_OJ`
 fortran  | `POJ`
 c#       | `HDU_OJ`
-
-> 提交的代码需要通过 [base64 编码](http://tool.chinaz.com/Tools/Base64.aspx)
-
-#### Command
-```shell
-scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
-```
-+ argument
-    - problem_id
-    - language
-    - source `base64 编码`
 
 #### Script
 ```python
