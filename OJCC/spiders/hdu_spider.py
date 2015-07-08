@@ -7,6 +7,16 @@ from OJCC.items import ProblemItem, SolutionItem
 from base64 import b64decode
 import time
 
+LANGUAGE = {
+        'g++': '0',
+        'gcc': '1',
+        'c++': '2',
+        'c': '3',
+        'pascal': '4',
+        'java': '5',
+        'c#': '6'
+    }
+
 class HduProblemSpider(Spider):
     name = 'hdu_problem'
     allowed_domains = ['acm.hdu.edu.cn']
