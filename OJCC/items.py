@@ -10,6 +10,7 @@ import scrapy
 class ProblemItem(scrapy.Item):
 
     origin_oj = scrapy.Field()
+    problem_id = scrapy.Field()
     problem_url = scrapy.Field()
     title = scrapy.Field()
     time_limit = scrapy.Field()
