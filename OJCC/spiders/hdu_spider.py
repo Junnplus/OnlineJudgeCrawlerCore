@@ -41,18 +41,17 @@ class HduInitSpider(CrawlSpider):
         sel = Selector(response)
 
         item = ProblemItem()
-        print response
-        item['origin_oj'] = 'poj'
+        item['origin_oj'] = 'hdu'
         item['problem_id'] = response.url[-4:]
         item['problem_url'] = response.url
-        item['title'] = sel.css('.ptt').xpath('./text()').extract()[0]
-        item['description'] = sel.css('.ptx').extract()[0]
-        item['input'] = sel.css('.ptx').extract()[1]
-        item['output'] = sel.css('.ptx').extract()[2]
-        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0]
-        item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
-        item['sample_input'] = sel.css('.sio').extract()[0]
-        item['sample_output'] = sel.css('.sio').extract()[1]
+        item['title'] = sel.xpath('//h1/text()').extract()[0]
+        item['description'] = sel.css('.panel_content').extract()[0]
+        item['input'] = sel.css('.panel_content').extract()[1]
+        item['output'] = sel.css('.panel_content').extract()[2]
+        item['time_limit'] = sel.xpath('//b/span/text()').re('T[\S*\s]*S')[0]
+        item['memory_limit'] = sel.xpath('//b/span/text()').re('Me[\S*\s]*K')[0]
+        item['sample_input'] = sel.xpath('//pre').extract()[0]
+        item['sample_output'] = sel.xpath('//pre').extract()[1]
         return item
 
 class HduProblemSpider(Spider):
