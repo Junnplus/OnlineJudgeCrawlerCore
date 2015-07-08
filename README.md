@@ -73,7 +73,7 @@ c#       | `HDU_OJ`
 
 Example:
 ```shell
-scrapy crawl `origin_oj`_submit -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ=='
+scrapy crawl sdut_submit -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ=='
 ```
 
 #### Script
