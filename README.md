@@ -37,6 +37,15 @@ def problem_crawl(origin_oj, problem_id):
 
 ### Code Submit
 
+> 提交的代码需要通过 base64 编码
+
+#### Command
+```shell
+scrapy crawl `origin_oj`_submit -a problem_id='1000' -a language='gcc' -a source='`base64_code`'
+```
+
+#### Script
+
 
 ## Support
 
