@@ -26,11 +26,13 @@ scrapy crawl `origin_oj`_problrm -a problem_id=''
 #### Script
 ```python
 from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings as settings
+from scrapy.utils.project import get_project_settings
+from scrapy.utils.log import configure_logging
 
 def problem_crawl(origin_oj, problem_id):
+    setting = get_project_settings()
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
-    process = CrawlerProcess(settings())
+    process = CrawlerProcess(settings)
     process.crawl(origin_oj + '_problem', problem_id=problem_id)
     process.start()
 ```
