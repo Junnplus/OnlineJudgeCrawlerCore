@@ -22,6 +22,8 @@ source /usr/bin/virtualenvwrapper.sh
 ```shell
 scrapy crawl `origin_oj`_problrm -a problem_id=''
 ```
+* arg
+    - problem_id
 
 #### Script
 ```python
@@ -60,6 +62,10 @@ c#       | `HDU_OJ`
 ```shell
 scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
 ```
+* arg
+    - problem_id
+    - language
+    - source `base64 编码`
 
 #### Script
 ```python
