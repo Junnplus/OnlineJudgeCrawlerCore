@@ -19,7 +19,7 @@ source /usr/bin/virtualenvwrapper.sh
 
 ## Support
 
-- [poj](http://poj.org)
-- hdu
-- sdut
-- zoj
+- [POJ](http://poj.org)
+- [HDU](http://acm.hdu.edu.cn)
+- [SDUT](http://acm.sdut.edu.cn)
+- [FZU](http://acm.fzu.edu.cn)
