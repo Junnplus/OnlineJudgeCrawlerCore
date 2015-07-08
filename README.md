@@ -12,10 +12,31 @@ source /usr/bin/virtualenvwrapper.sh
 ```
 - source ~/.bashrc
 - git clone https://github.com/Junnplus/OnlineJudge_Crawler_Core.git && cd OnlineJudge_Crawler_Core
-- mkvirtualenv OJCC 
+- mkvirtualenv OJCC
 - pip install -r requirements.txt
 
 ## Usage
+
+### Problem Crawl
+#### Command
+```shell
+scrapy crawl `origin_oj`_problrm -a problem_id='1000'
+```
+
+#### Script
+```python
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings as settings
+
+def problem_crawl(origin_oj, problem_id):
+    configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
+    process = CrawlerProcess(settings())
+    process.crawl(origin_oj + '_problem', problem_id=problem_id)
+    process.start()
+```
+
+### Code Submit
+
 
 ## Support
 
