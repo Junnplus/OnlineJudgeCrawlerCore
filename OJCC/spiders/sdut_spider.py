@@ -85,7 +85,7 @@ class SdutSubmitSpider(CrawlSpider):
             source=None, *args, **kwargs):
         super(SdutSubmitSpider, self).__init__(*args, **kwargs)
         self.problem_id = problem_id
-        self.language = language
+        self.language = LANGUAGE.get(language, 'g++')
         if source is not None:
             self.source = source
 
