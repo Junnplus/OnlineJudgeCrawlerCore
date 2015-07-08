@@ -8,6 +8,21 @@ from OJCC.items import ProblemItem, SolutionItem
 from base64 import b64decode
 import time
 
+lANGUAGE = {
+        'gcc': 'gcc',
+        'g++': 'g++',
+        'java': 'java',
+        'pascal': 'pascal',
+        'go': 'go',
+        'lua': 'lua',
+        'dao': 'dao',
+        'perl': 'perl',
+        'ruby': 'ruby',
+        'haskell': 'haskell',
+        'python2': 'python2',
+        'python3': 'python3'
+    }
+
 class SdutProblemSpider(Spider):
     name = 'sdut_problem'
     allowed_domains = ['acm.sdut.edu.cn']
@@ -25,6 +40,7 @@ class SdutProblemSpider(Spider):
 
         item = ProblemItem()
         item['origin_oj'] = 'sdut'
+        item['problem_id'] = self.problem_id
         item['problem_url'] = response.url
         item['title'] = sel.xpath('//center/h2/text()').extract()[0]
         item['description'] = sel.css('.pro_desc').extract()[0]
