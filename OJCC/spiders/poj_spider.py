@@ -7,14 +7,52 @@ from OJCC.items import ProblemItem, SolutionItem
 import time
 
 LANGUAGE = {
-        'g++': '0',
-        'gcc': '1',
-        'java': '2',
-        'pascal': '3',
-        'c++': '4',
-        'c': '5',
-        'fortran': '6'
-    }
+    'g++': '0',
+    'gcc': '1',
+    'java': '2',
+    'pascal': '3',
+    'c++': '4',
+    'c': '5',
+    'fortran': '6'
+}
+
+class PojInitSpider(CrawlSpider):
+    name = 'poj_init'
+    allowed_domains = ['poj.org']
+
+    start_urls = [
+            'http://poj.org/problemlist'
+    ]
+
+    rules = [
+        Rule(
+            link(
+                allow=('problemlist\?volume=[0-9]+'),
+                unique=True
+            )),
+        Rule(
+            link(
+                allow=('problem\?id=[0-9]+')
+            ), callback='problem_item')
+    ]
+
+    def problem_item(self, response):
+        sel = Selector(response)
+
+        item = ProblemItem()
+        print response
+        item['origin_oj'] = 'poj'
+        item['problem_id'] = response.url[-4:]
+        item['problem_url'] = response.url
+        item['title'] = sel.css('.ptt').xpath('./text()').extract()[0]
+        item['description'] = sel.css('.ptx').extract()[0]
+        item['input'] = sel.css('.ptx').extract()[1]
+        item['output'] = sel.css('.ptx').extract()[2]
+        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0]
+        item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
+        item['sample_input'] = sel.css('.sio').extract()[0]
+        item['sample_output'] = sel.css('.sio').extract()[1]
+        return item
 
 class PojProblemSpider(Spider):
     name = 'poj_problem'
