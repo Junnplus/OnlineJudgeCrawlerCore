@@ -29,8 +29,9 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from scrapy.utils.log import configure_logging
 
+setting = get_project_settings()
+
 def problem_crawl(origin_oj, problem_id):
-    setting = get_project_settings()
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
     process = CrawlerProcess(settings)
     process.crawl(origin_oj + '_problem', problem_id=problem_id)
@@ -61,6 +62,14 @@ scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
 ```
 
 #### Script
+```python
+# ...
+def code_submit(origin_oj, problem_id, language, source):
+    configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
+    process = CrawlerProcess(settings)
+    process.crawl(origin_oj + '_submit', problem_id=problem_id, language=language, source=source)
+    process.start()
+```
 
 
 ## Support
