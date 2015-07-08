@@ -55,7 +55,7 @@ c#       | `HDU_OJ`
 
 #### Command
 ```shell
-scrapy crawl `origin_oj`_submit -a problem_id='1000' -a language='gcc' -a source=''
+scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
 ```
 
 #### Script
