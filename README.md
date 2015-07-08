@@ -37,7 +37,7 @@ def problem_crawl(origin_oj, problem_id):
 
 ### Code Submit
 
-> 提交的代码需要通过 base64 编码
+> 提交的代码需要通过 [base64 编码](http://tool.chinaz.com/Tools/Base64.aspx)
 
 #### Command
 ```shell
