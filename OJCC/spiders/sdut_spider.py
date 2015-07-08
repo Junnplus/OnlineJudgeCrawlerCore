@@ -9,19 +9,56 @@ from base64 import b64decode
 import time
 
 LANGUAGE = {
-        'gcc': 'gcc',
-        'g++': 'g++',
-        'java': 'java',
-        'pascal': 'pascal',
-        'go': 'go',
-        'lua': 'lua',
-        'dao': 'dao',
-        'perl': 'perl',
-        'ruby': 'ruby',
-        'haskell': 'haskell',
-        'python2': 'python2',
-        'python3': 'python3'
-    }
+    'gcc': 'gcc',
+    'g++': 'g++',
+    'java': 'java',
+    'pascal': 'pascal',
+    'go': 'go',
+    'lua': 'lua',
+    'dao': 'dao',
+    'perl': 'perl',
+    'ruby': 'ruby',
+    'haskell': 'haskell',
+    'python2': 'python2',
+    'python3': 'python3'
+}
+
+class SdutInitSpider(CrawlSpider):
+    name = 'sdut_init'
+    allowed_domains = ['acm.sdut.edu.cn']
+
+    start_urls = [
+        'http://acm.sdut.edu.cn/sdutoj/problem.php'
+    ]
+
+    rules = [
+        Rule(
+            link(
+                allow=('problem.php\?page=[0-9]+'),
+                unique=True
+            )),
+        Rule(
+            link(
+                allow=('problem.php\?action\S*[0-9]+')
+            ), callback='problem_item')
+    ]
+
+    def problem_item(self, response):
+        sel = Selector(response)
+
+        item = ProblemItem()
+        item['origin_oj'] = 'sdut'
+        item['problem_id'] = response.url[-4:]
+        item['problem_url'] = response.url
+        item['title'] = sel.xpath('//center/h2/text()').extract()[0]
+        item['description'] = sel.css('.pro_desc').extract()[0]
+        item['input'] = sel.css('.pro_desc').extract()[1]
+        item['output'] = sel.css('.pro_desc').extract()[2]
+        item['time_limit'] = sel.xpath('//a/h5/text()').re('T[\S*\s]*s')[0]
+        item['memory_limit'] = sel.xpath('//a/h5/text()').re('M[\S*\s]*K')[0]
+        item['sample_input'] = sel.xpath('//pre').extract()[0]
+        item['sample_output'] = sel.xpath('//pre').extract()[1]
+        return item
 
 class SdutProblemSpider(Spider):
     name = 'sdut_problem'
