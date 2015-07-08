@@ -68,12 +68,12 @@ class HduSubmitSpider(CrawlSpider):
 
     def __init__(self,
             problem_id='1000',
-            language='0',
+            language='g++',
             source=None, *args, **kwargs):
         super(HduSubmitSpider, self).__init__(*args, **kwargs)
 
         self.problem_id = problem_id
-        self.language = language
+        self.language = LANGUAGE.get(language, '0')
         if source is not None:
             self.source = source
 
