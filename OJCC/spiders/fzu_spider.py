@@ -46,8 +46,17 @@ class FzuInitSpider(CrawlSpider):
         item['title'] = sel.xpath(
             '//div[contains(@class, "problem_title")]/b/text()').extract()[0]
         item['description'] = sel.css('.pro_desc').extract()[0]
-        item['input'] = sel.css('.pro_desc').extract()[1]
-        item['output'] = sel.css('.pro_desc').extract()[2]
+
+        try:
+            item['input'] = sel.css('.pro_desc').extract()[1]
+        except:
+            item['input'] = []
+
+        try:
+            item['output'] = sel.css('.pro_desc').extract()[2]
+        except:
+            item['output'] = []
+
         item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0]
         item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
         item['sample_input'] = sel.css('.data').extract()[0]
