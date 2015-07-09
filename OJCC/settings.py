@@ -95,7 +95,7 @@ USER_AGENT_LIST = [
 DOWNLOADER_MIDDLEWARES = {
     #'OJCC.middlewares.MyCustomDownloaderMiddleware': 543,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'OJCC.downloadermiddlewares.useragent.RandomUserAgentMiddleware': 400
+    'OJCC.middlewares.useragent.RandomUserAgentMiddleware': 400
 }
 
 # Enable or disable extensions
