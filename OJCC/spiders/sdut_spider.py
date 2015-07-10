@@ -37,11 +37,13 @@ class SdutInitSpider(CrawlSpider):
             link(
                 allow=('problem.php\?page=[0-9]+'),
                 unique=True
-            )),
+            )
+        ),
         Rule(
             link(
                 allow=('problem.php\?action\S*[0-9]+')
-            ), callback='problem_item')
+            ), callback='problem_item'
+        )
     ]
 
     def problem_item(self, response):
