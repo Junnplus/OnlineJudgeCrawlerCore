@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from scrapy.spiders import Spider
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
@@ -5,6 +6,7 @@ from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
 from OJCC.items import ProblemItem, SolutionItem
 from base64 import b64decode
+from datetime import datetime
 import time
 
 LANGUAGE = {
@@ -37,14 +39,21 @@ class FzuInitSpider(CrawlSpider):
     ]
 
     def problem_item(self, response):
-        sel = Selector(response)
+        html = response.body.\
+            replace(' <= ', ' &le; ').\
+            replace(' < ', ' &lt; ').\
+            replace(' > ', ' &gt; ').\
+            replace(' >= ', ' &ge; ')
+
+        sel = Selector(text=html)
 
         item = ProblemItem()
         item['origin_oj'] = 'fzu'
         item['problem_id'] = response.url[-4:]
         item['problem_url'] = response.url
-        item['title'] = sel.xpath(
-            '//div[contains(@class, "problem_title")]/b/text()').extract()[0]
+        item['title'] = sel.xpath(\
+            '//div[contains(@class,\
+            "problem_title")]/b/text()').extract()[0][14:].rstrip()
         item['description'] = sel.css('.pro_desc').extract()[0]
 
         try:
@@ -59,8 +68,15 @@ class FzuInitSpider(CrawlSpider):
 
         item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0]
         item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
-        item['sample_input'] = sel.css('.data').extract()[0]
-        item['sample_output'] = sel.css('.data').extract()[1]
+        item['accpect'] = sel.css('.problem_desc').re('Accept:*\s[0-9]+')[0][8:]
+        item['submit'] = sel.css('.problem_desc').re('Submit:*\s[0-9]+')[0][8:]
+        item['sample_input'] = \
+            sel.css('.data').extract()[0].replace('<div',\
+                '<pre').replace('</div>', '</pre>')
+        item['sample_output'] = \
+            sel.css('.data').extract()[1].replace('<div', \
+                '<pre').replace('</div>', '</pre>')
+        item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
 class FzuProblemSpider(Spider):
@@ -75,14 +91,21 @@ class FzuProblemSpider(Spider):
         ]
 
     def parse(self, response):
-        sel = Selector(response)
+        html = response.body.\
+            replace(' <= ', ' &le; ').\
+            replace(' < ', ' &lt; ').\
+            replace(' > ', ' &gt; ').\
+            replace(' >= ', ' &ge; ')
+
+        sel = Selector(text=html)
 
         item = ProblemItem()
         item['origin_oj'] = 'fzu'
         item['problem_id'] = self.problem_id
         item['problem_url'] = response.url
-        item['title'] = sel.xpath(
-            '//div[contains(@class, "problem_title")]/b/text()').extract()[0]
+        item['title'] = sel.xpath(\
+            '//div[contains(@class,\
+            "problem_title")]/b/text()').extract()[0][14:].rstrip()
         item['description'] = sel.css('.pro_desc').extract()[0]
         try:
             item['input'] = sel.css('.pro_desc').extract()[1]
@@ -94,8 +117,15 @@ class FzuProblemSpider(Spider):
             item['output'] = []
         item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0]
         item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
-        item['sample_input'] = sel.css('.data').extract()[0]
-        item['sample_output'] = sel.css('.data').extract()[1]
+        item['accpect'] = sel.css('.problem_desc').re('Accept:*\s[0-9]+')[0][8:]
+        item['submit'] = sel.css('.problem_desc').re('Submit:*\s[0-9]+')[0][8:]
+        item['sample_input'] = \
+            sel.css('.data').extract()[0].replace('<div',\
+                '<pre').replace('</div>', '</pre>')
+        item['sample_output'] = \
+            sel.css('.data').extract()[1].replace('<div', \
+                '<pre').replace('</div>', '</pre>')
+        item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
 class FzuSubmitSpider(CrawlSpider):
