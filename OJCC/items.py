@@ -24,7 +24,7 @@ class ProblemItem(scrapy.Item):
     source = scrapy.Field()
     update_time = scrapy.Field()
     accpect = scrapy.Field()
-    Submit = scrapy.Field()
+    submit = scrapy.Field()
 
 class SolutionItem(scrapy.Item):
 
