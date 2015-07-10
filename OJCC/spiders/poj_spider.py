@@ -4,6 +4,7 @@ from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
 from OJCC.items import ProblemItem, SolutionItem
+from datetime import datetime
 import time
 
 LANGUAGE = {
@@ -29,15 +30,23 @@ class PojInitSpider(CrawlSpider):
             link(
                 allow=('problemlist\?volume=[0-9]+'),
                 unique=True
-            )),
+            )
+        ),
         Rule(
             link(
                 allow=('problem\?id=[0-9]+')
-            ), callback='problem_item')
+            ), callback='problem_item'
+        )
     ]
 
     def problem_item(self, response):
-        sel = Selector(response)
+        html = response.body.\
+            replace('<=', ' &le; ').\
+            replace(' < ', ' &lt; ').\
+            replace(' > ', ' &gt; ').\
+            replace('>=', ' &ge; ')
+
+        sel = Selector(text=html)
 
         item = ProblemItem()
         print response
@@ -52,6 +61,7 @@ class PojInitSpider(CrawlSpider):
         item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
         item['sample_input'] = sel.css('.sio').extract()[0]
         item['sample_output'] = sel.css('.sio').extract()[1]
+        item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
 class PojProblemSpider(Spider):
@@ -66,7 +76,13 @@ class PojProblemSpider(Spider):
         ]
 
     def parse(self, response):
-        sel = Selector(response)
+        html = response.body.\
+            replace('<=', ' &le; ').\
+            replace(' < ', ' &lt; ').\
+            replace(' > ', ' &gt; ').\
+            replace('>=', ' &ge; ')
+
+        sel = Selector(text=html)
 
         item = ProblemItem()
         item['origin_oj'] = 'poj'
@@ -76,10 +92,11 @@ class PojProblemSpider(Spider):
         item['description'] = sel.css('.ptx').extract()[0]
         item['input'] = sel.css('.ptx').extract()[1]
         item['output'] = sel.css('.ptx').extract()[2]
-        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0]
-        item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
+        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0][16:]
+        item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0][18:]
         item['sample_input'] = sel.css('.sio').extract()[0]
         item['sample_output'] = sel.css('.sio').extract()[1]
+        item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
 class PojSubmitSpider(CrawlSpider):
