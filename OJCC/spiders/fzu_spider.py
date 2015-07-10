@@ -66,8 +66,8 @@ class FzuInitSpider(CrawlSpider):
         except:
             item['output'] = []
 
-        item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0]
-        item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
+        item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0][12:]
+        item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0][15:]
         item['accpect'] = sel.css('.problem_desc').re('Accept:*\s[0-9]+')[0][8:]
         item['submit'] = sel.css('.problem_desc').re('Submit:*\s[0-9]+')[0][8:]
         item['sample_input'] = \
@@ -115,8 +115,8 @@ class FzuProblemSpider(Spider):
             item['output'] = sel.css('.pro_desc').extract()[2]
         except:
             item['output'] = []
-        item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0]
-        item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0]
+        item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0][12:]
+        item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0][15:]
         item['accpect'] = sel.css('.problem_desc').re('Accept:*\s[0-9]+')[0][8:]
         item['submit'] = sel.css('.problem_desc').re('Submit:*\s[0-9]+')[0][8:]
         item['sample_input'] = \
