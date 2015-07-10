@@ -5,6 +5,7 @@ from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
 from OJCC.items import ProblemItem, SolutionItem
 from base64 import b64decode
+from datetime import datetime
 import time
 
 LANGUAGE = {
@@ -48,10 +49,13 @@ class HduInitSpider(CrawlSpider):
         item['description'] = sel.css('.panel_content').extract()[0]
         item['input'] = sel.css('.panel_content').extract()[1]
         item['output'] = sel.css('.panel_content').extract()[2]
-        item['time_limit'] = sel.xpath('//b/span/text()').re('T[\S*\s]*S')[0]
-        item['memory_limit'] = sel.xpath('//b/span/text()').re('Me[\S*\s]*K')[0]
+        item['time_limit'] = \
+            sel.xpath('//b/span/text()').re('T[\S*\s]*S')[0][12:]
+        item['memory_limit'] = \
+            sel.xpath('//b/span/text()').re('Me[\S*\s]*K')[0][14:]
         item['sample_input'] = sel.xpath('//pre').extract()[0]
         item['sample_output'] = sel.xpath('//pre').extract()[1]
+        item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
 class HduProblemSpider(Spider):
@@ -76,10 +80,13 @@ class HduProblemSpider(Spider):
         item['description'] = sel.css('.panel_content').extract()[0]
         item['input'] = sel.css('.panel_content').extract()[1]
         item['output'] = sel.css('.panel_content').extract()[2]
-        item['time_limit'] = sel.xpath('//b/span/text()').re('T[\S*\s]*S')[0]
-        item['memory_limit'] = sel.xpath('//b/span/text()').re('Me[\S*\s]*K')[0]
+        item['time_limit'] = \
+            sel.xpath('//b/span/text()').re('T[\S*\s]*S')[0][12:]
+        item['memory_limit'] = \
+            sel.xpath('//b/span/text()').re('Me[\S*\s]*K')[0][14:]
         item['sample_input'] = sel.xpath('//pre').extract()[0]
         item['sample_output'] = sel.xpath('//pre').extract()[1]
+        item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
 class HduSubmitSpider(CrawlSpider):
