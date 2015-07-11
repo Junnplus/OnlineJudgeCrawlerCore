@@ -57,7 +57,10 @@ class PojInitSpider(CrawlSpider):
         item['description'] = sel.css('.ptx').extract()[0]
         item['input'] = sel.css('.ptx').extract()[1]
         item['output'] = sel.css('.ptx').extract()[2]
-        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0]
+        try:
+            item['time_limit'] = sel.css('.plm').re('Case\sT[\S*\s]*MS')[0][21:]
+        except:
+            item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0][16:]
         item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0]
         item['sample_input'] = sel.css('.sio').extract()[0]
         item['sample_output'] = sel.css('.sio').extract()[1]
@@ -92,7 +95,10 @@ class PojProblemSpider(Spider):
         item['description'] = sel.css('.ptx').extract()[0]
         item['input'] = sel.css('.ptx').extract()[1]
         item['output'] = sel.css('.ptx').extract()[2]
-        item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0][16:]
+        try:
+            item['time_limit'] = sel.css('.plm').re('Case\sT[\S*\s]*MS')[0][21:]
+        except:
+            item['time_limit'] = sel.css('.plm').re('T[\S*\s]*MS')[0][16:]
         item['memory_limit'] = sel.css('.plm').re('Me[\S*\s]*K')[0][18:]
         item['sample_input'] = sel.css('.sio').extract()[0]
         item['sample_output'] = sel.css('.sio').extract()[1]
