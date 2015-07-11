@@ -54,28 +54,29 @@ class FzuInitSpider(CrawlSpider):
         item['title'] = sel.xpath(\
             '//div[contains(@class,\
             "problem_title")]/b/text()').extract()[0][14:].rstrip()
-        item['description'] = sel.css('.pro_desc').extract()[0]
-
+        item['description'] = \
+            sel.css('.pro_desc').extract()[0][22:-6].\
+                replace('<div class="data">', '<pre>')
         try:
             item['input'] = sel.css('.pro_desc').extract()[1]
         except:
             item['input'] = []
-
         try:
             item['output'] = sel.css('.pro_desc').extract()[2]
         except:
             item['output'] = []
-
         item['time_limit'] = sel.css('.problem_desc').re('T[\S*\s]*c')[0][12:]
         item['memory_limit'] = sel.css('.problem_desc').re('M[\S*\s]*B')[0][15:]
         item['accpect'] = sel.css('.problem_desc').re('Accept:*\s[0-9]+')[0][8:]
         item['submit'] = sel.css('.problem_desc').re('Submit:*\s[0-9]+')[0][8:]
         item['sample_input'] = \
-            sel.css('.data').extract()[0].replace('<div',\
-                '<pre').replace('</div>', '</pre>')
+            sel.css('.data').extract()[-2].\
+                replace('<div class="data">', '<pre>').\
+                replace('</div>', '</pre>')
         item['sample_output'] = \
-            sel.css('.data').extract()[1].replace('<div', \
-                '<pre').replace('</div>', '</pre>')
+            sel.css('.data').extract()[-1].\
+                replace('<div class="data">', '<pre>').\
+                replace('</div>', '</pre>')
         item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
@@ -106,7 +107,9 @@ class FzuProblemSpider(Spider):
         item['title'] = sel.xpath(\
             '//div[contains(@class,\
             "problem_title")]/b/text()').extract()[0][14:].rstrip()
-        item['description'] = sel.css('.pro_desc').extract()[0]
+        item['description'] = \
+            sel.css('.pro_desc').extract()[0][22:-6].\
+                replace('<div class="data">', '<pre>')
         try:
             item['input'] = sel.css('.pro_desc').extract()[1]
         except:
@@ -120,11 +123,13 @@ class FzuProblemSpider(Spider):
         item['accpect'] = sel.css('.problem_desc').re('Accept:*\s[0-9]+')[0][8:]
         item['submit'] = sel.css('.problem_desc').re('Submit:*\s[0-9]+')[0][8:]
         item['sample_input'] = \
-            sel.css('.data').extract()[0].replace('<div',\
-                '<pre').replace('</div>', '</pre>')
+            sel.css('.data').extract()[-2].\
+                replace('<div class="data">', '<pre>').\
+                replace('</div>', '</pre>')
         item['sample_output'] = \
-            sel.css('.data').extract()[1].replace('<div', \
-                '<pre').replace('</div>', '</pre>')
+            sel.css('.data').extract()[-1].\
+                replace('<div class="data">', '<pre>').\
+                replace('</div>', '</pre>')
         item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
