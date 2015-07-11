@@ -98,7 +98,9 @@ class FzuProblemSpider(Spider):
             replace(' <= ', ' &le; ').\
             replace(' < ', ' &lt; ').\
             replace(' > ', ' &gt; ').\
-            replace(' >= ', ' &ge; ')
+            replace(' >= ', ' &ge; ').\
+            replace(' << ', ' &lt;&lt; ').\
+            replace(' >> ', ' &gt;&gt; ')
 
         sel = Selector(text=html)
 
