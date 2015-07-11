@@ -56,7 +56,9 @@ class FzuInitSpider(CrawlSpider):
             "problem_title")]/b/text()').extract()[0][14:].rstrip()
         item['description'] = \
             sel.css('.pro_desc').extract()[0][22:-6].\
-                replace('<div class="data">', '<pre>')
+                replace('<div class="data">', '<pre>').\
+                replace('</div>', '</pre>')
+
         try:
             item['input'] = sel.css('.pro_desc').extract()[1]
         except:
@@ -109,7 +111,9 @@ class FzuProblemSpider(Spider):
             "problem_title")]/b/text()').extract()[0][14:].rstrip()
         item['description'] = \
             sel.css('.pro_desc').extract()[0][22:-6].\
-                replace('<div class="data">', '<pre>')
+                replace('<div class="data">', '<pre>').\
+                replace('</div>', '</pre>')
+
         try:
             item['input'] = sel.css('.pro_desc').extract()[1]
         except:
