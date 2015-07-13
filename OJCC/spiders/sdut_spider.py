@@ -118,18 +118,19 @@ class SdutSubmitSpider(CrawlSpider):
             follow=True, callback='parse_start_url')
     ]
 
-    username = 'sdutacm1'
-    password = 'sdutacm'
-
     is_judged = False
 
     def __init__(self,
-            problem_id='1000',
-            language='g++',
-            source=None, *args, **kwargs):
+            problem_id = '1000',
+            language = 'g++',
+            source = None,
+            username = 'sdutacm1',
+            password = 'sdutacm', *args, **kwargs):
         super(SdutSubmitSpider, self).__init__(*args, **kwargs)
         self.problem_id = problem_id
         self.language = LANGUAGE.get(language, 'g++')
+        self.username = username
+        self.password = password
         if source is not None:
             self.source = source
 
