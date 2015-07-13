@@ -70,7 +70,7 @@ def problem_crawl(origin_oj, problem_id):
 
 #### Command
 ```shell
-scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source=''
+scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source='' -a username='' -a password=''
 ```
 + argument
     - problem_id 
@@ -88,16 +88,16 @@ FZU_OJ    | `gcc`, `g++`, `java`, `pascal`, `c`, `c++`
 
 Example:
 ```shell
-scrapy crawl sdut_submit -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ=='
+scrapy crawl sdut_submit -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ==' -a username='sdutacm1' -a password='sdutacm'
 ```
 
 #### Script
 ```python
 # ...
-def code_submit(origin_oj, problem_id, language, source):
+def code_submit(origin_oj, problem_id, language, source, username, password):
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
     process = CrawlerProcess(settings)
-    process.crawl(origin_oj + '_submit', problem_id=problem_id, language=language, source=source)
+    process.crawl(origin_oj + '_submit', problem_id=problem_id, language=language, source=source, username=username, password=password)
     process.start()
 ```
 
