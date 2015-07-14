@@ -60,8 +60,8 @@ class SdutInitSpider(CrawlSpider):
         item['time_limit'] = sel.xpath('//a/h5/text()').re('T[\S*\s]*s')[0][12:]
         item['memory_limit'] = \
             sel.xpath('//a/h5/text()').re('M[\S*\s]*K')[0][14:]
-        item['sample_input'] = sel.xpath('//pre').extract()[0]
-        item['sample_output'] = sel.xpath('//pre').extract()[1]
+        item['sample_input'] = sel.xpath('//div[@class="data"]/pre').extract()[0]
+        item['sample_output'] = sel.xpath('//div[@class="data"]/pre').extract()[1]
         item['update_time'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         return item
 
