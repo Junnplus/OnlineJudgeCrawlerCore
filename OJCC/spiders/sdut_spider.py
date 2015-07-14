@@ -207,6 +207,7 @@ class SdutAccountSpider(Spider):
     login_url = 'http://acm.sdut.edu.cn/sdutoj/login.php?action=login'
     start_urls = ['http://acm.sdut.edu.cn/sdutoj/setting.php']
 
+    is_login = False
     def __init__(self,
             username='sutacm1',
             password='sdutacm', *args, **kwargs):
@@ -227,6 +228,8 @@ class SdutAccountSpider(Spider):
         )]
 
     def after_login(self, response):
+        if not re.search(r'用户名或密码错误!', response.body):
+            self.is_login = True
         for url in self.start_urls:
             yield self.make_requests_from_url(url)
 
@@ -236,20 +239,21 @@ class SdutAccountSpider(Spider):
         item = AccountItem()
         item['origin_oj'] = 'sdut'
         item['username'] = self.username
-        try:
-            item['rank'] = sel.\
-                xpath('//div[@id="content"]/table/tr')[1].\
-                xpath('./td[6]/text()').extract()[0]
-            item['accept'] = sel.\
-                xpath('//div[@id="content"]/table/tr')[2].\
-                xpath('./td[6]/text()').extract()[0]
-            item['submit'] = sel.\
-                xpath('//div[@id="content"]/table/tr')[3].\
-                xpath('./td[6]/text()').extract()[0]
-            item['status'] = 'Authentication Success'
-        except:
-            if re.search('请先登录!', response.body):
-                item['status'] = 'Authentication Failed'
-            else:
+        if self.is_login:
+            try:
+                item['rank'] = sel.\
+                    xpath('//div[@id="content"]/table/tr')[1].\
+                    xpath('./td[6]/text()').extract()[0]
+                item['accept'] = sel.\
+                    xpath('//div[@id="content"]/table/tr')[2].\
+                    xpath('./td[6]/text()').extract()[0]
+                item['submit'] = sel.\
+                    xpath('//div[@id="content"]/table/tr')[3].\
+                    xpath('./td[6]/text()').extract()[0]
+                item['status'] = 'Authentication Success'
+            except:
                 item['status'] = 'Unknown Error'
+        else:
+            item['status'] = 'Authentication Failed'
+
         return item
