@@ -103,7 +103,30 @@ def code_submit(origin_oj, problem_id, language, source, username, password):
     process.start()
 ```
 
+### Account Info
 
+#### Command
+```shell
+scrapy crawl `origin_oj`_user -a username='' -a password=''
+```
++ argument
+    - username 
+    - password
+
+Example:
+```shell
+scrapy crawl sdut_user -a username='sdutacm1' -a password='sdutacm'
+```
+
+#### Script
+```python
+# ...
+def code_submit(origin_oj, problem_id, language, source, username, password):
+    configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
+    process = CrawlerProcess(settings)
+    process.crawl(origin_oj + '_user', username=username, password=password)
+    process.start()
+```
 ## Support
 
 - [POJ](http://poj.org)
