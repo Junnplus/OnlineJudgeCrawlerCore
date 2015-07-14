@@ -4,10 +4,11 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from base64 import b64decode
 from datetime import datetime
 import time
+import re
 
 LANGUAGE = {
     'gcc': 'gcc',
@@ -198,3 +199,57 @@ class SdutSubmitSpider(CrawlSpider):
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
                 self.is_judged = True
                 return item
+
+class SdutAccountSpider(Spider):
+    name = 'sdut_user'
+    allowed_domains = ['acm.sdut.edu.cn']
+
+    login_url = 'http://acm.sdut.edu.cn/sdutoj/login.php?action=login'
+    start_urls = ['http://acm.sdut.edu.cn/sdutoj/setting.php']
+
+    def __init__(self,
+            username='sutacm1',
+            password='sdutacm', *args, **kwargs):
+        super(SdutAccountSpider, self).__init__(*args, **kwargs)
+
+        self.username = username
+        self.password = password
+
+    def start_requests(self):
+        return [FormRequest(self.login_url,
+                formdata = {
+                        'username': self.username,
+                        'password': self.password,
+                        'submit': '++%E7%99%BB+%E5%BD%95++'
+                },
+                callback = self.after_login,
+                dont_filter = True
+        )]
+
+    def after_login(self, response):
+        for url in self.start_urls:
+            yield self.make_requests_from_url(url)
+
+    def parse(self, response):
+        sel = Selector(response)
+
+        item = AccountItem()
+        item['origin_oj'] = 'sdut'
+        item['username'] = self.username
+        try:
+            item['rank'] = sel.\
+                xpath('//div[@id="content"]/table/tr')[1].\
+                xpath('./td[6]/text()').extract()[0]
+            item['accept'] = sel.\
+                xpath('//div[@id="content"]/table/tr')[2].\
+                xpath('./td[6]/text()').extract()[0]
+            item['submit'] = sel.\
+                xpath('//div[@id="content"]/table/tr')[3].\
+                xpath('./td[6]/text()').extract()[0]
+            item['status'] = 'Authentication Success'
+        except:
+            if re.search('请先登录!', response.body):
+                item['status'] = 'Authentication Failed'
+            else:
+                item['status'] = 'Unknown Error'
+        return item
