@@ -248,7 +248,6 @@ class FzuAccountSpider(CrawlSpider):
     name = 'fzu_user'
     allowed_domains = ['acm.fzu.edu.cn']
     login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
-    login_verify_url = 'http://acm.fzu.edu.cn/loginlog.php'
 
     is_login = False
 
