@@ -121,7 +121,7 @@ scrapy crawl sdut_user -a username='sdutacm1' -a password='sdutacm'
 #### Script
 ```python
 # ...
-def code_submit(origin_oj, problem_id, language, source, username, password):
+def account_info(origin_oj, username, password):
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
     process = CrawlerProcess(settings)
     process.crawl(origin_oj + '_user', username=username, password=password)
