@@ -7,6 +7,7 @@ from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from base64 import b64decode
 from datetime import datetime
 import time
+import re
 
 LANGUAGE = {
         'g++': '0',
@@ -220,12 +221,7 @@ class HduAccountSpider(Spider):
         )]
 
     def after_login(self, response):
-        return [Request(self.login_verify_url,
-            callback = self.login_verify
-        )]
-
-    def login_verify(self, response):
-        if response.url == self.login_verify_url:
+        if not re.search(r'No such user or wrong password.', response.body):
             self.is_login = True
         for url in self.start_urls:
             yield self.make_requests_from_url(url)
