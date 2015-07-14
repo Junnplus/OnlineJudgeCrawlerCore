@@ -3,7 +3,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from base64 import b64decode
 from datetime import datetime
 import time
@@ -105,17 +105,18 @@ class HduSubmitSpider(CrawlSpider):
         Rule(link(allow=('/status.php\?first\S*status')), follow=True, callback='parse_start_url')
     ]
 
-    username = 'sdutacm1'
-    password = 'sdutacm'
-
     is_judged = False
 
     def __init__(self,
-            problem_id='1000',
-            language='g++',
-            source=None, *args, **kwargs):
+            problem_id = '1000',
+            language = 'g++',
+            source=None,
+            username = 'sdutacm1',
+            password = 'sdutacm', *args, **kwargs):
         super(HduSubmitSpider, self).__init__(*args, **kwargs)
 
+        self.username = username
+        self.password = password
         self.problem_id = problem_id
         self.language = LANGUAGE.get(language, '0')
         if source is not None:
@@ -186,3 +187,67 @@ class HduSubmitSpider(CrawlSpider):
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
                 self.is_judged = True
                 return item
+
+class HduAccountSpider(Spider):
+    name = 'hdu_user'
+    allowed_domains = ['acm.hdu.edu.cn']
+    login_url = 'http://acm.hdu.edu.cn/userloginex.php?action=login'
+    login_verify_url = 'http://acm.hdu.edu.cn/control_panel.php'
+
+    is_login = False
+
+    def __init__(self,
+            username='sdutacm1',
+            password='sdutacm', *args, **kwargs):
+        super(HduAccountSpider, self).__init__(*args, **kwargs)
+
+        self.username = username
+        self.password = password
+
+        self.start_urls = [
+            'http://acm.hdu.edu.cn/userstatus.php?user=%s' % username
+        ]
+
+    def start_requests(self):
+        return [FormRequest(self.login_url,
+                formdata = {
+                        'username': self.username,
+                        'userpass': self.password,
+                        'login': 'Sign+In',
+                },
+                callback = self.after_login,
+                dont_filter = True
+        )]
+
+    def after_login(self, response):
+        return [Request(self.login_verify_url,
+            callback = self.login_verify
+        )]
+
+    def login_verify(self, response):
+        if response.url == self.login_verify_url:
+            self.is_login = True
+        for url in self.start_urls:
+            yield self.make_requests_from_url(url)
+
+    def parse(self, response):
+        sel = Selector(response)
+
+        item = AccountItem()
+        item['origin_oj'] = 'hdu'
+        item['username'] = self.username
+        if self.is_login:
+            try:
+                item['rank'] = sel.xpath('//table')[3].\
+                    xpath('./tr')[1].xpath('./td/text()')[1].extract()
+                item['accept'] = sel.xpath('//table')[3].\
+                    xpath('./tr')[3].xpath('./td/text()')[1].extract()
+                item['submit'] = sel.xpath('//table')[3].\
+                    xpath('./tr')[4].xpath('./td/text()')[1].extract()
+                item['status'] = 'Authentication Success'
+            except:
+                item['status'] = 'Unknown Error'
+        else:
+            item['status'] = 'Authentication Failed'
+
+        return item
