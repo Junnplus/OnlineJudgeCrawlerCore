@@ -38,3 +38,12 @@ class SolutionItem(scrapy.Item):
     language = scrapy.Field()
     code_length = scrapy.Field()
     submit_time = scrapy.Field()
+
+class AccountItem(scrapy.Item):
+
+    origin_oj = scrapy.Field()
+    username = scrapy.Field()
+    accept = scrapy.Field()
+    submit = scrapy.Field()
+    rank = scrapy.Field()
+    status = scrapy.Field()
