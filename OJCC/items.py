@@ -23,7 +23,7 @@ class ProblemItem(scrapy.Item):
     hint = scrapy.Field()
     source = scrapy.Field()
     update_time = scrapy.Field()
-    accpect = scrapy.Field()
+    accept = scrapy.Field()
     submit = scrapy.Field()
 
 class SolutionItem(scrapy.Item):
