@@ -4,10 +4,11 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from base64 import b64decode
 from datetime import datetime
 import time
+import re
 
 LANGUAGE = {
         'g++': '0',
@@ -242,3 +243,62 @@ class FzuSubmitSpider(CrawlSpider):
                 item['result'] = tr.xpath('.//td/font/text()').extract()[0]
                 self.is_judged = True
                 return item
+
+class FzuAccountSpider(CrawlSpider):
+    name = 'fzu_user'
+    allowed_domains = ['acm.fzu.edu.cn']
+    login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
+    login_verify_url = 'http://acm.fzu.edu.cn/loginlog.php'
+
+    is_login = False
+
+    def __init__(self,
+            username='sdutacm1',
+            password='sdutacm', *args, **kwargs):
+        super(FzuAccountSpider, self).__init__(*args, **kwargs)
+
+        self.username = username
+        self.password = password
+
+        self.start_urls = [
+                "http://acm.fzu.edu.cn/user.php?uname=%s" % username
+        ]
+
+    def start_requests(self):
+        return [FormRequest(self.login_url,
+                formdata = {
+                        'uname': self.username,
+                        'upassword': self.password,
+                        'submit': 'Submit',
+                },
+                callback = self.after_login,
+                dont_filter = True
+        )]
+
+    def after_login(self, response):
+        if not re.search(r'Please Check Your UserID', response.body):
+            self.is_login = True
+        for url in self.start_urls:
+            yield self.make_requests_from_url(url)
+
+    def parse(self, response):
+        sel = Selector(response)
+
+        item = AccountItem()
+        item['origin_oj'] = 'fzu'
+        item['username'] = self.username
+        if self.is_login:
+            try:
+                item['rank'] = sel.xpath('//table')[2].\
+                    xpath('./tr')[0].xpath('./td/text()')[1].extract()
+                item['accept'] = sel.xpath('//table')[2].\
+                    xpath('./tr')[2].xpath('./td/text()')[1].extract()
+                item['submit'] = sel.xpath('//table')[2].\
+                    xpath('./tr')[1].xpath('./td/text()')[1].extract()
+                item['status'] = 'Authentication Success'
+            except:
+                item['status'] = 'Unknown Error'
+        else:
+            item['status'] = 'Authentication Failed'
+
+        return item
