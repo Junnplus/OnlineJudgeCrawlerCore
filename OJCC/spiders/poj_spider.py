@@ -1,9 +1,10 @@
+#-*- coding: utf-8 -*-
 from scrapy.spiders import Spider
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from datetime import datetime
 import time
 
@@ -121,18 +122,18 @@ class PojSubmitSpider(CrawlSpider):
         Rule(link(allow=('/status\?top=[0-9]+'), deny=('status\?bottom=[0-9]+')), follow=True, callback='parse_start_url')
     ]
 
-    username = 'sdutacm1'
-    password = 'sdutacm'
-
     is_judged = False
 
     def __init__(self,
             problem_id='1000',
             language='g++',
             source=None,
-            *args, **kwargs):
+            username='sdutacm1',
+            password='sdutacm', *args, **kwargs):
         super(PojSubmitSpider, self).__init__(*args, **kwargs)
 
+        self.username = username
+        self.password = password
         self.problem_id = problem_id
         self.language = LANGUAGE.get(language, '0')
         if source is not None:
@@ -202,3 +203,66 @@ class PojSubmitSpider(CrawlSpider):
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
                 self.is_judged = True
                 return item
+
+class PojAccountSpider(CrawlSpider):
+    name = 'poj_user'
+    allowed_domains = ['poj.org']
+    login_url = 'http://poj.org/login'
+    login_verify_url = 'http://poj.org/loginlog'
+
+    is_login = False
+
+    def __init__(self,
+            username='sdutacm1',
+            password='sdutacm', *args, **kwargs):
+        super(PojAccountSpider, self).__init__(*args, **kwargs)
+
+        self.username = username
+        self.password = password
+
+        self.start_urls = [
+                "http://poj.org/userstatus?user_id=%s" % username
+        ]
+
+    def start_requests(self):
+        return [FormRequest(self.login_url,
+            formdata = {
+                    'user_id1': self.username,
+                    'password1': self.password,
+                    'B1': 'login',
+            },
+            callback = self.after_login,
+        )]
+
+    def after_login(self, response):
+        return [Request(self.login_verify_url,
+            callback = self.login_verify
+        )]
+
+    def login_verify(self, response):
+        if response.url == self.login_verify_url:
+            self.is_login = True
+        for url in self.start_urls:
+            yield self.make_requests_from_url(url)
+
+    def parse(self, response):
+        sel = Selector(response)
+
+        item = AccountItem()
+        item['origin_oj'] = 'poj'
+        item['username'] = self.username
+        if self.is_login:
+            try:
+                item['rank'] = sel.xpath('//center/table/tr')[1].\
+                    xpath('.//td/font/text()').extract()[0]
+                item['accept'] = sel.xpath('//center/table/tr')[2].\
+                    xpath('.//td/a/text()').extract()[0]
+                item['submit'] = sel.xpath('//center/table/tr')[3].\
+                    xpath('.//td/a/text()').extract()[0]
+                item['status'] = 'Authentication Success'
+            except:
+                item['status'] = 'Unknown Error'
+        else:
+            item['status'] = 'Authentication Failed'
+
+        return item
