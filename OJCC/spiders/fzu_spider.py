@@ -281,7 +281,7 @@ class FzuAccountSpider(CrawlSpider):
         )]
 
     def login_verify(self, response):
-        if re.search(' My login log', response.body):
+        if re.search('Write New Mail', response.body):
             self.is_login = True
         for url in self.start_urls:
             yield self.make_requests_from_url(url)
