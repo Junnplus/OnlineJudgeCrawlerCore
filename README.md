@@ -22,7 +22,7 @@ source /usr/bin/virtualenvwrapper.sh
 
 ## Usage
 
-### Problem Init
+### Origin_OJ Init
 
 > 抓取Origin_OJ现有的所有题目
 
