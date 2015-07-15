@@ -35,8 +35,17 @@ class MongoPipeline(object):
     def process_item(self, item, spider):
         collection_name = item.__class__.__name__
         if collection_name == 'AccountItem':
-            self.db[collection_name].update({'origin_oj': item['origin_oj'],
-                'username': item['username']}, dict(item), upsert=True)
+            self.db[collection_name].update(
+                {
+                    'origin_oj': item['origin_oj'],
+                    'username': item['username']
+                },
+                {
+                    '$set': dict(item)
+                },
+                upsert=True,
+                multi=True
+            )
         else:
             self.db[collection_name].update({'origin_oj': item['origin_oj'],
                 'problem_id': item['problem_id']}, dict(item), upsert=True)
