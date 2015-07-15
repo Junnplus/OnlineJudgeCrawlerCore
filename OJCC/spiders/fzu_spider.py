@@ -248,6 +248,7 @@ class FzuAccountSpider(CrawlSpider):
     name = 'fzu_user'
     allowed_domains = ['acm.fzu.edu.cn']
     login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
+    login_verify_url = 'http://acm.fzu.edu.cn/mail.php'
 
     is_login = False
 
@@ -275,7 +276,12 @@ class FzuAccountSpider(CrawlSpider):
         )]
 
     def after_login(self, response):
-        if not re.search(r'Please Check Your UserID', response.body):
+        return [Request(self.login_verify_url,
+            callback = self.login_verify
+        )]
+
+    def login_verify(self, response):
+        if re.search(' My login log', response.body):
             self.is_login = True
         for url in self.start_urls:
             yield self.make_requests_from_url(url)
