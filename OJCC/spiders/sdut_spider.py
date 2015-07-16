@@ -122,12 +122,14 @@ class SdutSubmitSpider(CrawlSpider):
     is_judged = False
 
     def __init__(self,
+            id=1,
             problem_id = '1000',
             language = 'g++',
             source = None,
             username = 'sdutacm1',
             password = 'sdutacm', *args, **kwargs):
         super(SdutSubmitSpider, self).__init__(*args, **kwargs)
+        self.id = id
         self.problem_id = problem_id
         self.language = LANGUAGE.get(language, 'g++')
         self.username = username
@@ -173,6 +175,7 @@ class SdutSubmitSpider(CrawlSpider):
         sel = Selector(response)
 
         item = SolutionItem()
+        item['id'] = self.id
         for tr in sel.xpath('//table[@class="tablelist"]/tr')[1:]:
             user = tr.xpath('.//td/a/xmp/text()').extract()[0]
             _submit_time = tr.xpath('.//td/text()').extract()[-1]
