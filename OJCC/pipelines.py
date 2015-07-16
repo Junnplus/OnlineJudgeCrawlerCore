@@ -49,10 +49,14 @@ class MongoPipeline(object):
         elif collection_name == 'SolutionItem':
             self.db[collection_name].update(
                 {
-                    'id': item['id'],
+                    'solution_id': item['id'],
                     'origin_oj': item['origin_oj'],
                     'problem_id': item['problem_id']
-                }, dict(item), upsert=True
+                },
+                {
+                    '$set': dict(item)
+                },
+                upsert=True
             )
         else:
             self.db[collection_name].update({'origin_oj': item['origin_oj'],
