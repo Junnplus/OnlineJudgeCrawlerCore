@@ -11,13 +11,13 @@ import time
 import re
 
 LANGUAGE = {
-        'g++': '0',
-        'gcc': '1',
-        'pascal': '2',
-        'java': '3',
-        'c++': '4',
-        'c': '5'
-    }
+    'g++': '0',
+    'gcc': '1',
+    'pascal': '2',
+    'java': '3',
+    'c++': '4',
+    'c': '5'
+}
 
 class FzuInitSpider(CrawlSpider):
     name = 'fzu_init'
@@ -221,6 +221,9 @@ class FzuSubmitSpider(CrawlSpider):
 
         item = SolutionItem()
         item['solution_id'] = self.solution_id
+        item['origin_oj'] = 'fzu'
+        item['problem_id'] = self.problem_id
+        item['language'] = self.language
         for tr in sel.xpath('//table/tr')[1:]:
             user = tr.xpath('.//td/a/text()').extract()[-1]
             _submit_time = tr.xpath('.//td/text()').extract()[1]
@@ -228,9 +231,6 @@ class FzuSubmitSpider(CrawlSpider):
                     time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
             if submit_time > self.login_time and \
                     user == self.username:
-                item['origin_oj'] = 'fzu'
-                item['problem_id'] = self.problem_id
-                item['language'] = self.language
                 item['submit_time'] = _submit_time
                 item['run_id'] = tr.xpath('.//td/text()').extract()[0]
 
@@ -240,10 +240,13 @@ class FzuSubmitSpider(CrawlSpider):
                     item['time'] = \
                         tr.xpath('.//td')[6].xpath('./text()').extract()[0]
                 except:
-                    item['memory'] = []
-                    item['time'] = []
+                    pass
+
                 item['code_length'] = tr.xpath('.//td/text()').extract()[-1]
-                item['result'] = tr.xpath('.//td/font/text()').extract()[0]
+                try:
+                    item['result'] = tr.xpath('.//td/font/text()').extract()[0]
+                except:
+                    item['result'] = tr.xpath('.//td/font/a/text()').extract()[0]
                 self.is_judged = True
                 return item
 
