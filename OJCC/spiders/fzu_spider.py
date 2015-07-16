@@ -175,7 +175,7 @@ class FzuSubmitSpider(CrawlSpider):
 
         self.solution_id = solution_id
         self.problem_id = problem_id
-        self.language = LANGUAGE.get(language, '0')
+        self.language = language
         self.username = username
         self.password = password
         if source is not None:
@@ -200,7 +200,7 @@ class FzuSubmitSpider(CrawlSpider):
         return [FormRequest(self.submit_url,
                 formdata = {
                         'pid': self.problem_id,
-                        'lang': self.language,
+                        'lang': LANGUAGE.get(self.language, '0'),
                         'code': b64decode(self.source),
                         'submit': 'Submit',
                 },
