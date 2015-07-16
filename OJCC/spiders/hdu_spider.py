@@ -109,6 +109,7 @@ class HduSubmitSpider(CrawlSpider):
     is_judged = False
 
     def __init__(self,
+            id = 1,
             problem_id = '1000',
             language = 'g++',
             source=None,
@@ -116,6 +117,7 @@ class HduSubmitSpider(CrawlSpider):
             password = 'sdutacm', *args, **kwargs):
         super(HduSubmitSpider, self).__init__(*args, **kwargs)
 
+        self.id = id
         self.username = username
         self.password = password
         self.problem_id = problem_id
@@ -162,6 +164,7 @@ class HduSubmitSpider(CrawlSpider):
         sel = Selector(response)
 
         item = SolutionItem()
+        item['id'] = self.id
         for tr in sel.xpath('//table[@class="table_text"]/tr')[1:]:
             user = tr.xpath('.//td/a/text()').extract()[-1]
             _submit_time = tr.xpath('.//td/text()').extract()[1]
