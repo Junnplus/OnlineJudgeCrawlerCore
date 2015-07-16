@@ -165,6 +165,7 @@ class FzuSubmitSpider(CrawlSpider):
     is_judged = False
 
     def __init__(self,
+            id=1,
             problem_id='1000',
             language='g++',
             source=None,
@@ -172,6 +173,7 @@ class FzuSubmitSpider(CrawlSpider):
             password = 'sdutacm', *args, **kwargs):
         super(FzuSubmitSpider, self).__init__(*args, **kwargs)
 
+        self.id = id
         self.problem_id = problem_id
         self.language = LANGUAGE.get(language, '0')
         self.username = username
@@ -218,6 +220,7 @@ class FzuSubmitSpider(CrawlSpider):
         sel = Selector(response)
 
         item = SolutionItem()
+        item['id'] = self.id
         for tr in sel.xpath('//table/tr')[1:]:
             user = tr.xpath('.//td/a/text()').extract()[-1]
             _submit_time = tr.xpath('.//td/text()').extract()[1]
