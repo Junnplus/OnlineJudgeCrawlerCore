@@ -121,7 +121,7 @@ class HduSubmitSpider(CrawlSpider):
         self.username = username
         self.password = password
         self.problem_id = problem_id
-        self.language = language
+        self.language = LANGUAGE.get(language, '0')
         if source is not None:
             self.source = source
 
@@ -144,7 +144,7 @@ class HduSubmitSpider(CrawlSpider):
         return [FormRequest(self.submit_url,
                 formdata = {
                         'problemid': self.problem_id,
-                        'language': LANGUAGE.get(self.language, '0'),
+                        'language': self.language,
                         'usercode': b64decode(self.source),
                         'check': '0'
                 },
