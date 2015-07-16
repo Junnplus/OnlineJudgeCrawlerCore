@@ -28,6 +28,7 @@ class ProblemItem(scrapy.Item):
 
 class SolutionItem(scrapy.Item):
 
+    id = scrapy.Field()
     origin_oj = scrapy.Field()
     problem_id = scrapy.Field()
     run_id = scrapy.Field()
