@@ -158,7 +158,7 @@ class HduSubmitSpider(CrawlSpider):
             yield self.make_requests_from_url(url)
 
     def parse_start_url(self, response):
-        if is_judged:
+        if self.is_judged:
             self._rules = []
 
         sel = Selector(response)
