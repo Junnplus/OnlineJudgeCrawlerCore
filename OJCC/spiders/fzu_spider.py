@@ -228,7 +228,7 @@ class FzuSubmitSpider(CrawlSpider):
                     time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
             if submit_time > self.login_time and \
                     user == self.username:
-                item['origin_oj'] = 'hdu'
+                item['origin_oj'] = 'fzu'
                 item['problem_id'] = self.problem_id
                 item['language'] = self.language
                 item['submit_time'] = _submit_time
