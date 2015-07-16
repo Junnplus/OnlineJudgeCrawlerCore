@@ -184,8 +184,7 @@ class HduSubmitSpider(CrawlSpider):
                     item['time'] = \
                         tr.xpath('.//td')[5].xpath('./text()').extract()[0]
                 except:
-                    item['memory'] = []
-                    item['time'] = []
+                    pass
 
                 item['code_length'] = tr.xpath('.//td/a/text()').extract()[-2]
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
