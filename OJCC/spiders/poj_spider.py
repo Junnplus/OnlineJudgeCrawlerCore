@@ -137,7 +137,7 @@ class PojSubmitSpider(CrawlSpider):
         self.username = username
         self.password = password
         self.problem_id = problem_id
-        self.language = language
+        self.language = LANGUAGE.get(language, '0')
         if source is not None:
             self.source = source
 
@@ -159,7 +159,7 @@ class PojSubmitSpider(CrawlSpider):
         return [FormRequest(self.submit_url,
                 formdata = {
                         'problem_id': self.problem_id,
-                        'language': LANGUAGE.get(self.language, '0'),
+                        'language': self.language,
                         'source': self.source,
                         'submit': 'Submit',
                         'encoded': '1'
