@@ -242,6 +242,7 @@ class HduAccountSpider(Spider):
                     xpath('./tr')[3].xpath('./td/text()')[1].extract()
                 item['submit'] = sel.xpath('//table')[3].\
                     xpath('./tr')[4].xpath('./td/text()')[1].extract()
+                item['solved'] = sel.xpath('//script')[5].re('[0-9]{4}')
                 item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
