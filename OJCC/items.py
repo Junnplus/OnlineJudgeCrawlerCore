@@ -48,3 +48,4 @@ class AccountItem(scrapy.Item):
     submit = scrapy.Field()
     rank = scrapy.Field()
     status = scrapy.Field()
+    solved = scrapy.Field()
