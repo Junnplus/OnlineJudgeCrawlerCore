@@ -254,6 +254,9 @@ class SdutAccountSpider(Spider):
         item['username'] = self.username
         if self.is_login:
             try:
+                item['nickname'] = sel.\
+                    xpath('//div[@id="content"]/table/tr')[1].\
+                    xpath('./td[2]/text()').extract()[0]
                 item['rank'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[1].\
                     xpath('./td[6]/text()').extract()[0]
@@ -272,3 +275,57 @@ class SdutAccountSpider(Spider):
             item['status'] = 'Authentication Failed'
 
         return item
+
+class SdutAcceptedSpider(CrawlSpider):
+    name = 'sdut_accepted'
+    allowed_domains = ['acm.sdut.edu.cn']
+
+    rules = [
+        Rule(
+            link(
+                allow=('status.php\?page=[0-9]+\S*'), \
+                deny=('status.php\?page=1&\S*'),
+                unique=True
+            ),
+            follow=True, callback='parse_start_url')
+    ]
+
+    def __init__(self,
+            username = 'sdutacm1', *args, **kwargs):
+        super(SdutAcceptedSpider, self).__init__(*args, **kwargs)
+        self.username = username
+        self.start_urls = [
+            "http://acm.sdut.edu.cn/sdutoj/status.php?username=%s&pro_lang=ALL&result=1"
+            % username
+        ]
+
+    def parse_start_url(self, response):
+
+        sel = Selector(response)
+
+        item = SolutionItem()
+        item['origin_oj'] = 'sdut'
+        item['problem_id'] = self.problem_id
+
+        for tr in sel.xpath('//table[@class="tablelist"]/tr')[1:]:
+            user = tr.xpath('.//td/a/xmp/text()').extract()[0]
+            _submit_time = tr.xpath('.//td/text()').extract()[-1]
+            submit_time = time.mktime(\
+                    time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
+            if submit_time > self.login_time and \
+                    user == self.username:
+                item['submit_time'] = _submit_time
+                item['run_id'] = tr.xpath('.//td/text()').extract()[0]
+
+                try:
+                    item['memory'] = \
+                        tr.xpath('.//td')[5].xpath('./text()').extract()[0]
+                    item['time'] = \
+                        tr.xpath('.//td')[4].xpath('./text()').extract()[0]
+                except:
+                    pass
+
+                item['code_length'] = tr.xpath('.//td/text()').\
+                    extract()[-2]
+                item['result'] = tr.xpath('.//td').\
+                    xpath('.//font/text()').extract()[0]
