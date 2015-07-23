@@ -306,6 +306,9 @@ class FzuAccountSpider(CrawlSpider):
                     xpath('./tr')[2].xpath('./td/text()')[1].extract()
                 item['submit'] = sel.xpath('//table')[2].\
                     xpath('./tr')[1].xpath('./td/text()')[1].extract()
+                item['solved'] = sel.\
+                    xpath('//div[@class="form_user_content"]/b/a/text()').\
+                    extract()
                 item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
