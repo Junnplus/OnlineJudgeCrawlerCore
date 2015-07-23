@@ -256,7 +256,7 @@ class SdutAccountSpider(Spider):
             try:
                 item['nickname'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[1].\
-                    xpath('./td[2]/text()').extract()[0]
+                    xpath('./td[2]/xmp/text()').extract()[0]
                 item['rank'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[1].\
                     xpath('./td[6]/text()').extract()[0]
