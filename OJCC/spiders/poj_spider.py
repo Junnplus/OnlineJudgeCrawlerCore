@@ -262,8 +262,8 @@ class PojAccountSpider(CrawlSpider):
                     xpath('.//td/a/text()').extract()[0]
                 item['submit'] = sel.xpath('//center/table/tr')[3].\
                     xpath('.//td/a/text()').extract()[0]
-                item['status'] = 'Authentication Success'
                 item['solved'] = sel.xpath('//script')[1].re('[0-9]{4}')
+                item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
         else:
