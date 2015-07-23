@@ -22,6 +22,7 @@ LANGUAGE = {
 class HduInitSpider(CrawlSpider):
     name = 'hdu_init'
     allowed_domains = ['acm.hdu.edu.cn']
+    problem_base_url = 'http://acm.hdu.edu.cn/showproblem.php?pid='
 
     start_urls = [
             'http://acm.hdu.edu.cn/listproblem.php'
@@ -31,13 +32,19 @@ class HduInitSpider(CrawlSpider):
         Rule(
             link(
                 allow=('listproblem.php\?vol=[0-9]+'),
-                unique=True
-            )),
-        Rule(
-            link(
-                allow=('showproblem.php\?pid=[0-9]+')
-            ), callback='problem_item')
+                unique=True,
+            ),
+            callback='problem_list'
+        )
     ]
+
+    def problem_list(self, response):
+        sel = Selector(response)
+        problems = sel.xpath('//script')[4].re('\(.+?\)')
+        for problem in problems:
+            problem_id = problem.split(',')[1]
+            yield Request(self.problem_base_url + problem_id,
+                callback=self.problem_item)
 
     def problem_item(self, response):
         sel = Selector(response)
