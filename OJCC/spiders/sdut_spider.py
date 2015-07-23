@@ -109,6 +109,8 @@ class SdutSubmitSpider(CrawlSpider):
         "http://acm.sdut.edu.cn/sdutoj/status.php"
     ]
 
+    download_delay = 0.5
+
     rules = [
         Rule(
             link(

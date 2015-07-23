@@ -111,6 +111,7 @@ class HduSubmitSpider(CrawlSpider):
         'http://acm.hdu.edu.cn/status.php'
     ]
 
+    download_delay = 0.5
     is_login = False
 
     rules = [

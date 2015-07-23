@@ -155,6 +155,7 @@ class FzuSubmitSpider(CrawlSpider):
             "http://acm.fzu.edu.cn/log.php"
     ]
 
+    download_delay = 0.5
     is_login = False
 
     rules = [

@@ -26,6 +26,8 @@ class PojInitSpider(CrawlSpider):
             'http://poj.org/problemlist'
     ]
 
+    download_delay = 5
+
     rules = [
         Rule(
             link(
@@ -118,6 +120,8 @@ class PojSubmitSpider(CrawlSpider):
     start_urls = [
         "http://poj.org/status"
     ]
+
+    download_delay = 0.5
 
     rules = [
         Rule(link(allow=('/status\?top=[0-9]+'), deny=('status\?bottom=[0-9]+')), follow=True, callback='parse_start_url')
@@ -230,6 +234,7 @@ class PojAccountSpider(Spider):
     accepted_url = \
         'http://poj.org/status?problem_id=&user_id=%s&result=0&language='
 
+    download_delay = 1
     is_login = False
 
     def __init__(self,
