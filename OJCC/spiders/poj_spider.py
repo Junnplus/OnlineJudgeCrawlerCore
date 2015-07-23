@@ -122,8 +122,6 @@ class PojSubmitSpider(CrawlSpider):
         Rule(link(allow=('/status\?top=[0-9]+'), deny=('status\?bottom=[0-9]+')), follow=True, callback='parse_start_url')
     ]
 
-    is_judged = False
-
     def __init__(self,
             solution_id=1,
             problem_id='1000',
@@ -174,13 +172,14 @@ class PojSubmitSpider(CrawlSpider):
             yield self.make_requests_from_url(url)
 
     def parse_start_url(self, response):
-        if self.is_judged:
-            self._rules = []
 
         sel = Selector(response)
 
         item = SolutionItem()
         item['solution_id'] = self.solution_id
+        item['origin_oj'] = 'poj'
+        item['problem_id'] = self.problem_id
+        item['language'] = self.language
         for tr in sel.xpath('//table')[-1].xpath('.//tr')[1:]:
             user = tr.xpath('.//td/a/text()').extract()[0]
             _submit_time = tr.xpath('.//td/text()').extract()[-1]
@@ -188,9 +187,6 @@ class PojSubmitSpider(CrawlSpider):
                     time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
             if submit_time > self.login_time and \
                     user == self.username:
-                item['origin_oj'] = 'poj'
-                item['problem_id'] = self.problem_id
-                item['language'] = self.language
                 item['submit_time'] = _submit_time
                 item['run_id'] = tr.xpath('.//td/text()').extract()[0]
 
@@ -204,7 +200,7 @@ class PojSubmitSpider(CrawlSpider):
 
                 item['code_length'] = tr.xpath('.//td/text()').extract()[-2]
                 item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
-                self.is_judged = True
+                self._rules = []
                 return item
 
 class PojAccountSpider(CrawlSpider):
