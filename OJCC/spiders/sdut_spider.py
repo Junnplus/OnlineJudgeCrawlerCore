@@ -119,7 +119,7 @@ class SdutSubmitSpider(CrawlSpider):
             follow=True, callback='parse_start_url')
     ]
 
-    is_judged = False
+    is_login = False
 
     def __init__(self,
             solution_id=1,
@@ -149,19 +149,24 @@ class SdutSubmitSpider(CrawlSpider):
         )]
 
     def after_login(self, response):
-        self.login_time = time.mktime(time.strptime(\
-                response.headers['Date'], \
-                '%a, %d %b %Y %H:%M:%S %Z')) + (8 * 60 * 60)
-        time.sleep(1)
-        return [FormRequest(self.submit_url,
-                formdata = {
-                    'Sub[problem_id]': self.problem_id,
-                    'Sub[pro_lang]': self.language,
-                    'Sub[code]': b64decode(self.source)
-                },
-                callback = self.after_submit,
-                dont_filter = True
-        )]
+        if not re.search(r'用户名或密码错误!', response.body):
+            self.is_login = True
+
+            self.login_time = time.mktime(time.strptime(\
+                    response.headers['Date'], \
+                    '%a, %d %b %Y %H:%M:%S %Z')) + (8 * 60 * 60)
+            time.sleep(1)
+            return [FormRequest(self.submit_url,
+                    formdata = {
+                        'Sub[problem_id]': self.problem_id,
+                        'Sub[pro_lang]': self.language,
+                        'Sub[code]': b64decode(self.source)
+                    },
+                    callback = self.after_submit,
+                    dont_filter = True
+            )]
+        else:
+            return Request(self.start_urls[0], callback = self.parse_start_url)
 
     def after_submit(self, response):
         time.sleep(3)
@@ -169,38 +174,44 @@ class SdutSubmitSpider(CrawlSpider):
             yield self.make_requests_from_url(url)
 
     def parse_start_url(self, response):
-        if self.is_judged:
-            self._rules = []
 
         sel = Selector(response)
 
         item = SolutionItem()
         item['solution_id'] = self.solution_id
-        for tr in sel.xpath('//table[@class="tablelist"]/tr')[1:]:
-            user = tr.xpath('.//td/a/xmp/text()').extract()[0]
-            _submit_time = tr.xpath('.//td/text()').extract()[-1]
-            submit_time = time.mktime(\
-                    time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
-            if submit_time > self.login_time and \
-                    user == self.username:
-                item['origin_oj'] = 'sdut'
-                item['problem_id'] = self.problem_id
-                item['language'] = self.language
-                item['submit_time'] = _submit_time
-                item['run_id'] = tr.xpath('.//td/text()').extract()[0]
+        item['origin_oj'] = 'sdut'
+        item['problem_id'] = self.problem_id
+        item['language'] = self.language
 
-                try:
-                    item['memory'] = \
-                        tr.xpath('.//td')[5].xpath('./text()').extract()[0]
-                    item['time'] = \
-                        tr.xpath('.//td')[4].xpath('./text()').extract()[0]
-                except:
-                    pass
+        if self.is_login:
+            for tr in sel.xpath('//table[@class="tablelist"]/tr')[1:]:
+                user = tr.xpath('.//td/a/xmp/text()').extract()[0]
+                _submit_time = tr.xpath('.//td/text()').extract()[-1]
+                submit_time = time.mktime(\
+                        time.strptime(_submit_time, '%Y-%m-%d %H:%M:%S'))
+                if submit_time > self.login_time and \
+                        user == self.username:
+                    item['submit_time'] = _submit_time
+                    item['run_id'] = tr.xpath('.//td/text()').extract()[0]
 
-                item['code_length'] = tr.xpath('.//td/text()').extract()[-2]
-                item['result'] = tr.xpath('.//td').xpath('.//font/text()').extract()[0]
-                self.is_judged = True
-                return item
+                    try:
+                        item['memory'] = \
+                            tr.xpath('.//td')[5].xpath('./text()').extract()[0]
+                        item['time'] = \
+                            tr.xpath('.//td')[4].xpath('./text()').extract()[0]
+                    except:
+                        pass
+
+                    item['code_length'] = tr.xpath('.//td/text()').\
+                        extract()[-2]
+                    item['result'] = tr.xpath('.//td').\
+                        xpath('.//font/text()').extract()[0]
+                    self._rules = []
+                    return item
+        else:
+            item['result'] = 'Submit Error'
+            self._rules = []
+            return item
 
 class SdutAccountSpider(Spider):
     name = 'sdut_user'
