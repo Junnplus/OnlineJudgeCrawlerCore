@@ -3,7 +3,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem, AccountItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem, AcceptedItem
 from base64 import b64decode
 from datetime import datetime
 import time
@@ -214,6 +214,8 @@ class HduAccountSpider(Spider):
     allowed_domains = ['acm.hdu.edu.cn']
     login_url = 'http://acm.hdu.edu.cn/userloginex.php?action=login'
     login_verify_url = 'http://acm.hdu.edu.cn/control_panel.php'
+    accepted_url = \
+        'http://acm.hdu.edu.cn/status.php?first=&pid=&user=%s&lang=0&status=5'
 
     is_login = False
 
@@ -254,6 +256,8 @@ class HduAccountSpider(Spider):
         item['username'] = self.username
         if self.is_login:
             try:
+                item['nickname'] = sel.xpath('//h1/text()').extract()[0]
+                self.nickname = item['nickname']
                 item['rank'] = sel.xpath('//table')[3].\
                     xpath('./tr')[1].xpath('./td/text()')[1].extract()
                 item['accept'] = sel.xpath('//table')[3].\
@@ -261,10 +265,38 @@ class HduAccountSpider(Spider):
                 item['submit'] = sel.xpath('//table')[3].\
                     xpath('./tr')[4].xpath('./td/text()')[1].extract()
                 item['solved'] = sel.xpath('//script')[5].re('[0-9]{4}')
+                yield Request(self.accepted_url % self.username,
+                    callback = self.accepted
+                )
                 item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
         else:
             item['status'] = 'Authentication Failed'
 
-        return item
+        yield item
+
+    def accepted(self, response):
+
+        sel = Selector(response)
+
+        item = AcceptedItem()
+
+        item['origin_oj'] = 'hdu'
+        item['username'] = self.username
+        next_url = sel.xpath('.//p/a/@href')[2].extract()
+        table_tr = sel.xpath('//table[@class="table_text"]/tr')[1:]
+        for tr in table_tr:
+            name = tr.xpath('.//td/a/text()').extract()[-1]
+            problem_id = tr.xpath('.//td[4]/a/text()').extract()[0]
+            submit_time = tr.xpath('.//td/text()').extract()[1]
+
+            if name == self.nickname:
+                item['problem_id'] = problem_id
+                item['first_submit_time'] = submit_time
+                yield item
+
+        if table_tr:
+            yield Request('http://' + self.allowed_domains[0] + next_url,
+                callback = self.accepted
+            )
