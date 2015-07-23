@@ -51,7 +51,7 @@ class AccountItem(scrapy.Item):
     status = scrapy.Field()
     solved = scrapy.Field()
 
-class AcceptedItem(scrapy.Items):
+class AcceptedItem(scrapy.Item):
 
     origin_oj = scrapy.Field()
     problem_id = scrapy.Field()
