@@ -18,7 +18,7 @@ MONGO_URI = 'mongodb://localhost:27017/'
 MONGO_DATABASE = 'OJCC'
 
 COOKIES_ENABLED = True
-DOWNLOAD_DELAY = 0.25
+#DOWNLOAD_DELAY = 0.25
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'OJCC (+http://www.yourdomain.com)'
