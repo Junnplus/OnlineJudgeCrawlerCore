@@ -252,6 +252,8 @@ class SdutAccountSpider(Spider):
                 item['submit'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[3].\
                     xpath('./td[6]/text()').extract()[0]
+                item['solved'] = sel.xpath('//table')[1].\
+                    xpath('./tr/td/a/text()').extract()
                 item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
