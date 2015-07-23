@@ -4,7 +4,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem, AccountItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem, AcceptedItem
 from datetime import datetime
 import time
 
@@ -222,11 +222,13 @@ class PojSubmitSpider(CrawlSpider):
             self._rules = []
             return item
 
-class PojAccountSpider(CrawlSpider):
+class PojAccountSpider(Spider):
     name = 'poj_user'
     allowed_domains = ['poj.org']
     login_url = 'http://poj.org/login'
     login_verify_url = 'http://poj.org/loginlog'
+    accepted_url = \
+        'http://poj.org/status?problem_id=&user_id=%s&result=0&language='
 
     is_login = False
 
@@ -239,7 +241,7 @@ class PojAccountSpider(CrawlSpider):
         self.password = password
 
         self.start_urls = [
-                "http://poj.org/userstatus?user_id=%s" % username
+            "http://poj.org/userstatus?user_id=%s" % username
         ]
 
     def start_requests(self):
@@ -278,10 +280,37 @@ class PojAccountSpider(CrawlSpider):
                 item['submit'] = sel.xpath('//center/table/tr')[3].\
                     xpath('.//td/a/text()').extract()[0]
                 item['solved'] = sel.xpath('//script')[1].re('[0-9]{4}')
+                yield Request(self.accepted_url % self.username,
+                    callback = self.accepted
+                )
                 item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
         else:
             item['status'] = 'Authentication Failed'
 
-        return item
+        yield item
+
+    def accepted(self, response):
+
+        sel = Selector(response)
+
+        item = AcceptedItem()
+
+        item['origin_oj'] = 'poj'
+        item['username'] = self.username
+        next_url = sel.xpath('//p/a/@href')[2].extract()
+        table_tr = sel.xpath('//table')[-1].xpath('.//tr')[1:]
+        for tr in table_tr:
+            name = tr.xpath('.//td/a/text()').extract()[0]
+            problem_id = tr.xpath('.//td[3]/a/text()').extract()[0].strip()
+            submit_time = tr.xpath('.//td/text()').extract()[-1]
+
+            item['problem_id'] = problem_id
+            item['first_submit_time'] = submit_time
+            yield item
+
+        if table_tr:
+            yield Request('http://' + self.allowed_domains[0] + '/' + next_url,
+                callback = self.accepted
+            )
