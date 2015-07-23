@@ -4,7 +4,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem, AccountItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem, AcceptedItem
 from base64 import b64decode
 from datetime import datetime
 import time
@@ -270,6 +270,8 @@ class FzuAccountSpider(CrawlSpider):
     allowed_domains = ['acm.fzu.edu.cn']
     login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
     login_verify_url = 'http://acm.fzu.edu.cn/mail.php'
+    accepted_url = \
+        'http://acm.fzu.edu.cn/log.php?pid=&user=%s&language=99&state=1&submit=Go'
 
     is_login = False
 
@@ -324,10 +326,37 @@ class FzuAccountSpider(CrawlSpider):
                 item['solved'] = sel.\
                     xpath('//div[@class="form_user_content"]/b/a/text()').\
                     extract()
+                yield Request(self.accepted_url % self.username,
+                    callback = self.accepted
+                )
                 item['status'] = 'Authentication Success'
             except:
                 item['status'] = 'Unknown Error'
         else:
             item['status'] = 'Authentication Failed'
 
-        return item
+        yield item
+
+    def accepted(self, response):
+
+        sel = Selector(response)
+
+        item = AcceptedItem()
+
+        item['origin_oj'] = 'fzu'
+        item['username'] = self.username
+        next_url = sel.xpath('//b/a/@href')[-2].extract()
+        table_tr = sel.xpath('//table/tr')[1:]
+        for tr in table_tr:
+            name = tr.xpath('.//td/a/text()').extract()[-1]
+            problem_id = tr.xpath('.//td[4]/a/text()').extract()[0]
+            submit_time = tr.xpath('.//td/text()').extract()[1]
+
+            item['problem_id'] = problem_id
+            item['first_submit_time'] = submit_time
+            yield item
+
+        if sel.xpath('//b/a/text()')[-2].extract() == 'Next':
+            yield Request('http://' + self.allowed_domains[0] + '/' + next_url,
+                callback = self.accepted
+            )
