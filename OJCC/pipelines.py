@@ -58,18 +58,6 @@ class MongoPipeline(object):
                 },
                 upsert=True
             )
-        elif collection_name == 'AcceptedItem':
-            self.db[collection_name].update(
-                {
-                    'origin_oj': item['origin_oj'],
-                    'problem_id': item['problem_id'],
-                    'username': item['username']
-                },
-                {
-                    '$set': dict(item)
-                },
-                upsert=True
-            )
         else:
             self.db[collection_name].update({'origin_oj': item['origin_oj'],
                 'problem_id': item['problem_id']}, dict(item), upsert=True)
