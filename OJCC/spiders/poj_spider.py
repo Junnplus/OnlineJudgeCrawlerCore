@@ -229,47 +229,22 @@ class PojSubmitSpider(CrawlSpider):
 class PojAccountSpider(Spider):
     name = 'poj_user'
     allowed_domains = ['poj.org']
-    login_url = 'http://poj.org/login'
-    login_verify_url = 'http://poj.org/loginlog'
+
     accepted_url = \
         'http://poj.org/status?problem_id=&user_id=%s&result=0&language='
 
     download_delay = 1
-    is_login = False
     solved = {}
 
     def __init__(self,
-            username='sdutacm1',
-            password='sdutacm', *args, **kwargs):
+            username='sdutacm1', *args, **kwargs):
         super(PojAccountSpider, self).__init__(*args, **kwargs)
 
         self.username = username
-        self.password = password
 
         self.start_urls = [
             "http://poj.org/userstatus?user_id=%s" % username
         ]
-
-    def start_requests(self):
-        return [FormRequest(self.login_url,
-            formdata = {
-                    'user_id1': self.username,
-                    'password1': self.password,
-                    'B1': 'login',
-            },
-            callback = self.after_login,
-        )]
-
-    def after_login(self, response):
-        return [Request(self.login_verify_url,
-            callback = self.login_verify
-        )]
-
-    def login_verify(self, response):
-        if response.url == self.login_verify_url:
-            self.is_login = True
-        for url in self.start_urls:
-            yield self.make_requests_from_url(url)
 
     def parse(self, response):
         sel = Selector(response)
@@ -277,22 +252,15 @@ class PojAccountSpider(Spider):
         self.item = AccountItem()
         self.item['origin_oj'] = 'poj'
         self.item['username'] = self.username
-        if self.is_login:
-            try:
-                self.item['rank'] = sel.xpath('//center/table/tr')[1].\
-                    xpath('.//td/font/text()').extract()[0]
-                self.item['accept'] = sel.xpath('//center/table/tr')[2].\
-                    xpath('.//td/a/text()').extract()[0]
-                self.item['submit'] = sel.xpath('//center/table/tr')[3].\
-                    xpath('.//td/a/text()').extract()[0]
-                yield Request(self.accepted_url % self.username,
-                    callback = self.accepted
-                )
-                self.item['status'] = 'Authentication Success'
-            except:
-                self.item['status'] = 'Unknown Error'
-        else:
-            self.item['status'] = 'Authentication Failed'
+        self.item['rank'] = sel.xpath('//center/table/tr')[1].\
+            xpath('.//td/font/text()').extract()[0]
+        self.item['accept'] = sel.xpath('//center/table/tr')[2].\
+            xpath('.//td/a/text()').extract()[0]
+        self.item['submit'] = sel.xpath('//center/table/tr')[3].\
+            xpath('.//td/a/text()').extract()[0]
+        yield Request(self.accepted_url % self.username,
+            callback = self.accepted
+        )
 
         yield self.item
 
