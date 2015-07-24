@@ -3,7 +3,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem, AccountItem, AcceptedItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from base64 import b64decode
 from datetime import datetime
 import time
@@ -219,6 +219,7 @@ class HduAccountSpider(Spider):
         'http://acm.hdu.edu.cn/status.php?first=&pid=&user=%s&lang=0&status=5'
 
     is_login = False
+    solved = {}
 
     def __init__(self,
             username='sdutacm1',
@@ -252,39 +253,34 @@ class HduAccountSpider(Spider):
     def parse(self, response):
         sel = Selector(response)
 
-        item = AccountItem()
-        item['origin_oj'] = 'hdu'
-        item['username'] = self.username
+        self.item = AccountItem()
+        self.item['origin_oj'] = 'hdu'
+        self.item['username'] = self.username
         if self.is_login:
             try:
-                item['nickname'] = sel.xpath('//h1/text()').extract()[0]
-                self.nickname = item['nickname']
-                item['rank'] = sel.xpath('//table')[3].\
+                self.item['nickname'] = sel.xpath('//h1/text()').extract()[0]
+                self.nickname = self.item['nickname']
+                self.item['rank'] = sel.xpath('//table')[3].\
                     xpath('./tr')[1].xpath('./td/text()')[1].extract()
-                item['accept'] = sel.xpath('//table')[3].\
+                self.item['accept'] = sel.xpath('//table')[3].\
                     xpath('./tr')[3].xpath('./td/text()')[1].extract()
-                item['submit'] = sel.xpath('//table')[3].\
+                self.item['submit'] = sel.xpath('//table')[3].\
                     xpath('./tr')[4].xpath('./td/text()')[1].extract()
-                item['solved'] = sel.xpath('//script')[5].re('[0-9]{4}')
                 yield Request(self.accepted_url % self.username,
                     callback = self.accepted
                 )
-                item['status'] = 'Authentication Success'
+                self.item['status'] = 'Authentication Success'
             except:
-                item['status'] = 'Unknown Error'
+                self.item['status'] = 'Unknown Error'
         else:
-            item['status'] = 'Authentication Failed'
+            self.item['status'] = 'Authentication Failed'
 
-        yield item
+        yield self.item
 
     def accepted(self, response):
 
         sel = Selector(response)
 
-        item = AcceptedItem()
-
-        item['origin_oj'] = 'hdu'
-        item['username'] = self.username
         next_url = sel.xpath('.//p/a/@href')[2].extract()
         table_tr = sel.xpath('//table[@class="table_text"]/tr')[1:]
         for tr in table_tr:
@@ -293,11 +289,12 @@ class HduAccountSpider(Spider):
             submit_time = tr.xpath('.//td/text()').extract()[1]
 
             if name == self.nickname:
-                item['problem_id'] = problem_id
-                item['first_submit_time'] = submit_time
-                yield item
+                self.solved[problem_id] = submit_time
+                self.item['solved'] = self.solved
 
         if table_tr:
             yield Request('http://' + self.allowed_domains[0] + next_url,
                 callback = self.accepted
             )
+
+        yield self.item

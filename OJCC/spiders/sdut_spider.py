@@ -4,7 +4,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem, AccountItem, AcceptedItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from base64 import b64decode
 from datetime import datetime
 import time
@@ -302,9 +302,10 @@ class SdutAccountSpider(Spider):
             if name == self.nickname:
                 self.solved[problem_id] = submit_time
                 self.item['solved'] = self.solved
-                yield self.item
 
         if table_tr:
             yield Request('http://' + self.allowed_domains[0] + '/sdutoj/' + next_url,
                 callback = self.accepted
             )
+
+        yield self.item

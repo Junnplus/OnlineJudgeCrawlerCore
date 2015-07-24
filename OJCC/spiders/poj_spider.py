@@ -4,7 +4,7 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor as link
 from scrapy.http import Request, FormRequest
 from scrapy.selector import Selector
-from OJCC.items import ProblemItem, SolutionItem, AccountItem, AcceptedItem
+from OJCC.items import ProblemItem, SolutionItem, AccountItem
 from datetime import datetime
 import time
 
@@ -236,6 +236,7 @@ class PojAccountSpider(Spider):
 
     download_delay = 1
     is_login = False
+    solved = {}
 
     def __init__(self,
             username='sdutacm1',
@@ -273,37 +274,32 @@ class PojAccountSpider(Spider):
     def parse(self, response):
         sel = Selector(response)
 
-        item = AccountItem()
-        item['origin_oj'] = 'poj'
-        item['username'] = self.username
+        self.item = AccountItem()
+        self.item['origin_oj'] = 'poj'
+        self.item['username'] = self.username
         if self.is_login:
             try:
-                item['rank'] = sel.xpath('//center/table/tr')[1].\
+                self.item['rank'] = sel.xpath('//center/table/tr')[1].\
                     xpath('.//td/font/text()').extract()[0]
-                item['accept'] = sel.xpath('//center/table/tr')[2].\
+                self.item['accept'] = sel.xpath('//center/table/tr')[2].\
                     xpath('.//td/a/text()').extract()[0]
-                item['submit'] = sel.xpath('//center/table/tr')[3].\
+                self.item['submit'] = sel.xpath('//center/table/tr')[3].\
                     xpath('.//td/a/text()').extract()[0]
-                item['solved'] = sel.xpath('//script')[1].re('[0-9]{4}')
                 yield Request(self.accepted_url % self.username,
                     callback = self.accepted
                 )
-                item['status'] = 'Authentication Success'
+                self.item['status'] = 'Authentication Success'
             except:
-                item['status'] = 'Unknown Error'
+                self.item['status'] = 'Unknown Error'
         else:
-            item['status'] = 'Authentication Failed'
+            self.item['status'] = 'Authentication Failed'
 
-        yield item
+        yield self.item
 
     def accepted(self, response):
 
         sel = Selector(response)
 
-        item = AcceptedItem()
-
-        item['origin_oj'] = 'poj'
-        item['username'] = self.username
         next_url = sel.xpath('//p/a/@href')[2].extract()
         table_tr = sel.xpath('//table')[-1].xpath('.//tr')[1:]
         for tr in table_tr:
@@ -311,11 +307,12 @@ class PojAccountSpider(Spider):
             problem_id = tr.xpath('.//td[3]/a/text()').extract()[0].strip()
             submit_time = tr.xpath('.//td/text()').extract()[-1]
 
-            item['problem_id'] = problem_id
-            item['first_submit_time'] = submit_time
-            yield item
+            self.solved[problem_id] = submit_time
+            self.item['solved'] = self.solved
 
         if table_tr:
             yield Request('http://' + self.allowed_domains[0] + '/' + next_url,
                 callback = self.accepted
             )
+
+        yield self.item
