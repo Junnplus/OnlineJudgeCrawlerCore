@@ -50,10 +50,3 @@ class AccountItem(scrapy.Item):
     rank = scrapy.Field()
     status = scrapy.Field()
     solved = scrapy.Field()
-
-class AcceptedItem(scrapy.Item):
-
-    origin_oj = scrapy.Field()
-    problem_id = scrapy.Field()
-    username = scrapy.Field()
-    first_submit_time = scrapy.Field()
