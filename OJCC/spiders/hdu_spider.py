@@ -213,42 +213,20 @@ class HduSubmitSpider(CrawlSpider):
 class HduAccountSpider(Spider):
     name = 'hdu_user'
     allowed_domains = ['acm.hdu.edu.cn']
-    login_url = 'http://acm.hdu.edu.cn/userloginex.php?action=login'
-    login_verify_url = 'http://acm.hdu.edu.cn/control_panel.php'
     accepted_url = \
         'http://acm.hdu.edu.cn/status.php?first=&pid=&user=%s&lang=0&status=5'
 
-    is_login = False
     solved = {}
 
     def __init__(self,
-            username='sdutacm1',
-            password='sdutacm', *args, **kwargs):
+            username='sdutacm1', *args, **kwargs):
         super(HduAccountSpider, self).__init__(*args, **kwargs)
 
         self.username = username
-        self.password = password
 
         self.start_urls = [
             'http://acm.hdu.edu.cn/userstatus.php?user=%s' % username
         ]
-
-    def start_requests(self):
-        return [FormRequest(self.login_url,
-                formdata = {
-                        'username': self.username,
-                        'userpass': self.password,
-                        'login': 'Sign+In',
-                },
-                callback = self.after_login,
-                dont_filter = True
-        )]
-
-    def after_login(self, response):
-        if not re.search(r'No such user or wrong password.', response.body):
-            self.is_login = True
-        for url in self.start_urls:
-            yield self.make_requests_from_url(url)
 
     def parse(self, response):
         sel = Selector(response)
@@ -256,24 +234,17 @@ class HduAccountSpider(Spider):
         self.item = AccountItem()
         self.item['origin_oj'] = 'hdu'
         self.item['username'] = self.username
-        if self.is_login:
-            try:
-                self.item['nickname'] = sel.xpath('//h1/text()').extract()[0]
-                self.nickname = self.item['nickname']
-                self.item['rank'] = sel.xpath('//table')[3].\
-                    xpath('./tr')[1].xpath('./td/text()')[1].extract()
-                self.item['accept'] = sel.xpath('//table')[3].\
-                    xpath('./tr')[3].xpath('./td/text()')[1].extract()
-                self.item['submit'] = sel.xpath('//table')[3].\
-                    xpath('./tr')[4].xpath('./td/text()')[1].extract()
-                yield Request(self.accepted_url % self.username,
-                    callback = self.accepted
-                )
-                self.item['status'] = 'Authentication Success'
-            except:
-                self.item['status'] = 'Unknown Error'
-        else:
-            self.item['status'] = 'Authentication Failed'
+        self.item['nickname'] = sel.xpath('//h1/text()').extract()[0]
+        self.nickname = self.item['nickname']
+        self.item['rank'] = sel.xpath('//table')[4].\
+            xpath('./tr')[1].xpath('./td/text()')[1].extract()
+        self.item['accept'] = sel.xpath('//table')[4].\
+            xpath('./tr')[3].xpath('./td/text()')[1].extract()
+        self.item['submit'] = sel.xpath('//table')[4].\
+            xpath('./tr')[4].xpath('./td/text()')[1].extract()
+        yield Request(self.accepted_url % self.username,
+            callback = self.accepted
+        )
 
         yield self.item
 
