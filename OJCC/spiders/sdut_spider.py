@@ -219,40 +219,19 @@ class SdutAccountSpider(Spider):
     name = 'sdut_user'
     allowed_domains = ['acm.sdut.edu.cn']
 
-    login_url = 'http://acm.sdut.edu.cn/sdutoj/login.php?action=login'
     accepted_url = \
         'http://acm.sdut.edu.cn/sdutoj/status.php?username=%s&pro_lang=ALL&result=1'
-    start_urls = [
-        'http://acm.sdut.edu.cn/sdutoj/setting.php'
-    ]
 
     solved = {}
-    is_login = False
 
     def __init__(self,
-            username='sdutacm1',
-            password='sdutacm', *args, **kwargs):
+            userid='15940', *args, **kwargs):
         super(SdutAccountSpider, self).__init__(*args, **kwargs)
 
-        self.username = username
-        self.password = password
-
-    def start_requests(self):
-        return [FormRequest(self.login_url,
-                formdata = {
-                        'username': self.username,
-                        'password': self.password,
-                        'submit': '++%E7%99%BB+%E5%BD%95++'
-                },
-                callback = self.after_login,
-                dont_filter = True
-        )]
-
-    def after_login(self, response):
-        if not re.search(r'用户名或密码错误!', response.body):
-            self.is_login = True
-        for url in self.start_urls:
-            yield self.make_requests_from_url(url)
+        self.userid =userid
+        self.start_urls = [
+            'http://acm.sdut.edu.cn/sdutoj/setting.php?userid=%s' % userid
+        ]
 
     def parse(self, response):
 
@@ -260,31 +239,29 @@ class SdutAccountSpider(Spider):
 
         self.item = AccountItem()
         self.item['origin_oj'] = 'sdut'
-        self.item['username'] = self.username
-        if self.is_login:
-            try:
-                self.item['nickname'] = sel.\
-                    xpath('//div[@id="content"]/table/tr')[1].\
-                    xpath('./td[2]/xmp/text()').extract()[0]
-                self.nickname = self.item['nickname']
-                self.item['rank'] = sel.\
-                    xpath('//div[@id="content"]/table/tr')[1].\
-                    xpath('./td[6]/text()').extract()[0]
-                self.item['accept'] = sel.\
-                    xpath('//div[@id="content"]/table/tr')[2].\
-                    xpath('./td[6]/text()').extract()[0]
-                self.item['submit'] = sel.\
-                    xpath('//div[@id="content"]/table/tr')[3].\
-                    xpath('./td[6]/text()').extract()[0]
-                yield Request(self.accepted_url % self.username,
-                    callback = self.accepted
-                )
-                self.item['status'] = 'Authentication Success'
-            except Exception, e:
-                print e
-                self.item['status'] = 'Unknown Error'
-        else:
-            self.item['status'] = 'Authentication Failed'
+        self.item['userid'] = self.userid
+        self.item['username'] = sel.\
+            xpath('//div[@id="content"]/table/tr')[0].\
+            xpath('./td[2]/h2/text()').extract()[0]
+        self.username = self.item['username']
+
+        self.item['nickname'] = sel.\
+            xpath('//div[@id="content"]/table/tr')[1].\
+            xpath('./td[2]/xmp/text()').extract()[0]
+        self.nickname = self.item['nickname']
+
+        self.item['rank'] = sel.\
+            xpath('//div[@id="content"]/table/tr')[1].\
+            xpath('./td[6]/text()').extract()[0]
+        self.item['accept'] = sel.\
+            xpath('//div[@id="content"]/table/tr')[2].\
+            xpath('./td[4]/text()').extract()[0]
+        self.item['submit'] = sel.\
+            xpath('//div[@id="content"]/table/tr')[3].\
+            xpath('./td[6]/text()').extract()[0]
+        yield Request(self.accepted_url % self.username,
+            callback = self.accepted
+        )
 
         yield self.item
 
