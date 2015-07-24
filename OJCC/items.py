@@ -43,6 +43,7 @@ class SolutionItem(scrapy.Item):
 class AccountItem(scrapy.Item):
 
     origin_oj = scrapy.Field()
+    userid = scrapy.Field()
     username = scrapy.Field()
     nickname = scrapy.Field()
     accept = scrapy.Field()
