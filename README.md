@@ -139,11 +139,11 @@ def account_info(origin_oj, username, password):
 scrapy crawl `origin_oj`_user -a username=''
 ```
 + argument
-    - username/userid # sdut use argument userid
+    - username # sdut use argument value is userid
 
 Example:
 ```shell
-scrapy crawl sdut_user -a userid='15940'
+scrapy crawl sdut_user -a username='15940'
 scrapy crawl poj_user -a username='sdutacm1'
 ```
 
