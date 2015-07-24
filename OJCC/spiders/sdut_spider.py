@@ -225,12 +225,12 @@ class SdutAccountSpider(Spider):
     solved = {}
 
     def __init__(self,
-            userid='15940', *args, **kwargs):
+            username='15940', *args, **kwargs):
         super(SdutAccountSpider, self).__init__(*args, **kwargs)
 
-        self.userid =userid
+        self.username = username
         self.start_urls = [
-            'http://acm.sdut.edu.cn/sdutoj/setting.php?userid=%s' % userid
+            'http://acm.sdut.edu.cn/sdutoj/setting.php?userid=%s' % username
         ]
 
     def parse(self, response):
@@ -239,11 +239,11 @@ class SdutAccountSpider(Spider):
 
         self.item = AccountItem()
         self.item['origin_oj'] = 'sdut'
-        self.item['userid'] = self.userid
-        self.item['username'] = sel.\
+        self.item['username'] = self.username
+
+        self.username = sel.\
             xpath('//div[@id="content"]/table/tr')[0].\
             xpath('./td[2]/h2/text()').extract()[0]
-        self.username = self.item['username']
 
         self.item['nickname'] = sel.\
             xpath('//div[@id="content"]/table/tr')[1].\
