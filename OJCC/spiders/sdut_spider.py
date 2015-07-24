@@ -226,6 +226,7 @@ class SdutAccountSpider(Spider):
         'http://acm.sdut.edu.cn/sdutoj/setting.php'
     ]
 
+    solved = {}
     is_login = False
 
     def __init__(self,
@@ -257,45 +258,40 @@ class SdutAccountSpider(Spider):
 
         sel = Selector(response)
 
-        item = AccountItem()
-        item['origin_oj'] = 'sdut'
-        item['username'] = self.username
+        self.item = AccountItem()
+        self.item['origin_oj'] = 'sdut'
+        self.item['username'] = self.username
         if self.is_login:
             try:
-                item['nickname'] = sel.\
+                self.item['nickname'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[1].\
                     xpath('./td[2]/xmp/text()').extract()[0]
-                self.nickname = item['nickname']
-                item['rank'] = sel.\
+                self.nickname = self.item['nickname']
+                self.item['rank'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[1].\
                     xpath('./td[6]/text()').extract()[0]
-                item['accept'] = sel.\
+                self.item['accept'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[2].\
                     xpath('./td[6]/text()').extract()[0]
-                item['submit'] = sel.\
+                self.item['submit'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[3].\
                     xpath('./td[6]/text()').extract()[0]
-                item['solved'] = sel.xpath('//table')[1].\
-                    xpath('./tr/td/a/text()').extract()
                 yield Request(self.accepted_url % self.username,
                     callback = self.accepted
                 )
-                item['status'] = 'Authentication Success'
-            except:
-                item['status'] = 'Unknown Error'
+                self.item['status'] = 'Authentication Success'
+            except Exception, e:
+                print e
+                self.item['status'] = 'Unknown Error'
         else:
-            item['status'] = 'Authentication Failed'
+            self.item['status'] = 'Authentication Failed'
 
-        yield item
+        yield self.item
 
     def accepted(self, response):
 
         sel = Selector(response)
 
-        item = AcceptedItem()
-
-        item['origin_oj'] = 'sdut'
-        item['username'] = self.username
         next_url = sel.xpath('.//div[@class="page"]/a/@href')[1].extract()
         table_tr = sel.xpath('//table[@class="tablelist"]/tr')[1:]
         for tr in table_tr:
@@ -304,9 +300,9 @@ class SdutAccountSpider(Spider):
             submit_time = tr.xpath('.//td/text()').extract()[-1]
 
             if name == self.nickname:
-                item['problem_id'] = problem_id
-                item['first_submit_time'] = submit_time
-                yield item
+                self.solved[problem_id] = submit_time
+                self.item['solved'] = self.solved
+                yield self.item
 
         if table_tr:
             yield Request('http://' + self.allowed_domains[0] + '/sdutoj/' + next_url,
