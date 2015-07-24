@@ -269,47 +269,20 @@ class FzuSubmitSpider(CrawlSpider):
 class FzuAccountSpider(CrawlSpider):
     name = 'fzu_user'
     allowed_domains = ['acm.fzu.edu.cn']
-    login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
-    login_verify_url = 'http://acm.fzu.edu.cn/mail.php'
     accepted_url = \
         'http://acm.fzu.edu.cn/log.php?pid=&user=%s&language=99&state=1&submit=Go'
 
-    is_login = False
     solved = {}
 
     def __init__(self,
-            username='sdutacm1',
-            password='sdutacm', *args, **kwargs):
+            username='sdutacm1', *args, **kwargs):
         super(FzuAccountSpider, self).__init__(*args, **kwargs)
 
         self.username = username
-        self.password = password
 
         self.start_urls = [
                 "http://acm.fzu.edu.cn/user.php?uname=%s" % username
         ]
-
-    def start_requests(self):
-        return [FormRequest(self.login_url,
-                formdata = {
-                        'uname': self.username,
-                        'upassword': self.password,
-                        'submit': 'Submit',
-                },
-                callback = self.after_login,
-                dont_filter = True
-        )]
-
-    def after_login(self, response):
-        return [Request(self.login_verify_url,
-            callback = self.login_verify
-        )]
-
-    def login_verify(self, response):
-        if re.search('Write New Mail', response.body):
-            self.is_login = True
-        for url in self.start_urls:
-            yield self.make_requests_from_url(url)
 
     def parse(self, response):
         sel = Selector(response)
@@ -317,22 +290,15 @@ class FzuAccountSpider(CrawlSpider):
         self.item = AccountItem()
         self.item['origin_oj'] = 'fzu'
         self.item['username'] = self.username
-        if self.is_login:
-            try:
-                self.item['rank'] = sel.xpath('//table')[2].\
-                    xpath('./tr')[0].xpath('./td/text()')[1].extract()
-                self.item['accept'] = sel.xpath('//table')[2].\
-                    xpath('./tr')[2].xpath('./td/text()')[1].extract()
-                self.item['submit'] = sel.xpath('//table')[2].\
-                    xpath('./tr')[1].xpath('./td/text()')[1].extract()
-                yield Request(self.accepted_url % self.username,
-                    callback = self.accepted
-                )
-                self.item['status'] = 'Authentication Success'
-            except:
-                self.item['status'] = 'Unknown Error'
-        else:
-            self.item['status'] = 'Authentication Failed'
+        self.item['rank'] = sel.xpath('//table')[1].\
+            xpath('./tr')[0].xpath('./td/text()')[1].extract()
+        self.item['accept'] = sel.xpath('//table')[1].\
+            xpath('./tr')[2].xpath('./td/text()')[1].extract()
+        self.item['submit'] = sel.xpath('//table')[1].\
+            xpath('./tr')[1].xpath('./td/text()')[1].extract()
+        yield Request(self.accepted_url % self.username,
+            callback = self.accepted
+        )
 
         yield self.item
 
