@@ -1,5 +1,7 @@
 # OnlineJudge Crawler Core
 
+> 停止更新, 项目整合到[Virtual Judge](https://github.com/Junnplus/VirtualJudge)
+
 ## Features
 
 - Random UserAgent Support
