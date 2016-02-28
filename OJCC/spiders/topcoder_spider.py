@@ -2,7 +2,8 @@
 
 from scrapy.spiders import Spider
 from scrapy.selector import Selector
-from ojcc.items import AccountItem
+
+from OJCC.items import AccountItem
 
 
 class TopcoderAccountSpider(Spider):
