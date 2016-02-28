@@ -7,7 +7,7 @@ from OJCC.items import AccountItem
 
 
 class CodeforcesAccountSpider(Spider):
-    name = 'codeforces_user'
+    name = 'codeforces_user_spider'
     allowed_domains = ['codeforces.com']
 
     def __init__(self, username, *args, **kwargs):

@@ -8,47 +8,39 @@
 
 ## Install
 
-- sudo pip install virtualenvwrapper
-- add the following lines to your ~/.bashrc:
-
-```shell
-if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
-    export WORKON_HOME=$HOME/.virtualenvs
-    source /usr/local/bin/virtualenvwrapper.sh
-fi
-```
-- source ~/.bashrc
 - git clone https://github.com/Junnplus/OnlineJudge_Crawler_Core.git && cd OnlineJudge_Crawler_Core
-- mkvirtualenv OJCC
 - pip install -r requirements.txt
 
 ## Usage
 
-### Origin_OJ Init
+### Origin_OJ Init Spider
 
-> 抓取Origin_OJ现有的所有题目
+> 抓取 Origin_OJ 现有的所有题目
 
 #### Command
 ```shell
-scrapy crawl `origin_oj`_init
+scrapy crawl `origin_oj`_init_spider
 ```
 
 Example:
 ```shell
-scrapy crawl poj_init
+scrapy crawl poj_init_spider
 ```
 
-### Problem Crawl
+### Problem Crawl Spider
+
+> 抓取 Origin_OJ 制定题目
+
 #### Command
 ```shell
-scrapy crawl `origin_oj`_problrm -a problem_id=''
+scrapy crawl `origin_oj`_problrm_spider -a problem_id=''
 ```
 + argument
     - problem_id
 
 Example:
 ```shell
-scrapy crawl poj_problrm -a problem_id='1000'
+scrapy crawl poj_problrm_spider -a problem_id='1000'
 ```
 
 #### Script
@@ -62,17 +54,17 @@ setting = get_project_settings()
 def problem_crawl(origin_oj, problem_id):
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
     process = CrawlerProcess(settings)
-    process.crawl(origin_oj + '_problem', problem_id=problem_id)
+    process.crawl(origin_oj + '_problem_spider', problem_id=problem_id)
     process.start()
 ```
 
-### Code Submit
+### Code Submit Spider
 
 > 提交的代码需要通过 [base64 编码](http://tool.chinaz.com/Tools/Base64.aspx)
 
 #### Command
 ```shell
-scrapy crawl `origin_oj`_submit -a problem_id='' -a language='' -a source='' -a username='' -a password=''
+scrapy crawl `origin_oj`_submit_spider -a problem_id='' -a language='' -a source='' -a username='' -a password=''
 ```
 + argument
     - problem_id 
@@ -92,7 +84,7 @@ FZU_OJ    | `gcc`, `g++`, `java`, `pascal`, `c`, `c++`
 
 Example:
 ```shell
-scrapy crawl sdut_submit -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ==' -a username='sdutacm1' -a password='sdutacm'
+scrapy crawl sdut_submit_spider -a problem_id='1000' -a language='gcc' -a source='I2luY2x1ZGUgPHN0ZGlvLmg+CgppbnQgbWFpbigpCnsKICAgIGludCBhLGI7CiAgICBzY2FuZigiJWQgJWQiLCZhLCAmYik7CiAgICBwcmludGYoIiVkXG4iLGErYik7CiAgICByZXR1cm4gMDsKfQ==' -a username='sdutacm1' -a password='sdutacm'
 ```
 
 #### Script
@@ -101,15 +93,17 @@ scrapy crawl sdut_submit -a problem_id='1000' -a language='gcc' -a source='I2luY
 def code_submit(origin_oj, problem_id, language, source, username, password):
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
     process = CrawlerProcess(settings)
-    process.crawl(origin_oj + '_submit', problem_id=problem_id, language=language, source=source, username=username, password=password)
+    process.crawl(origin_oj + '_submit_spider', problem_id=problem_id, language=language, source=source, username=username, password=password)
     process.start()
 ```
 
-### Account Info
+### Account Info Spider
+
+> 抓取帐号信息
 
 #### Command
 ```shell
-scrapy crawl `origin_oj`_user -a username='' -a password=''
+scrapy crawl `origin_oj`_user_spider -a username='' -a password=''
 ```
 + argument
     - username 
@@ -117,7 +111,7 @@ scrapy crawl `origin_oj`_user -a username='' -a password=''
 
 Example:
 ```shell
-scrapy crawl sdut_user -a username='sdutacm1' -a password='sdutacm'
+scrapy crawl sdut_user_spider -a username='sdutacm1' -a password='sdutacm'
 ```
 
 #### Script
@@ -126,7 +120,7 @@ scrapy crawl sdut_user -a username='sdutacm1' -a password='sdutacm'
 def account_info(origin_oj, username, password):
     configure_logging({'LOG_FORMAT': '%(levelname)s: %(message)s'})
     process = CrawlerProcess(settings)
-    process.crawl(origin_oj + '_user', username=username, password=password)
+    process.crawl(origin_oj + '_user_spider', username=username, password=password)
     process.start()
 ```
 

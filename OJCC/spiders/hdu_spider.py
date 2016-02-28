@@ -38,7 +38,7 @@ LANGUAGE = {
 
 
 class HduInitSpider(CrawlSpider):
-    name = 'hdu_init'
+    name = 'hdu_init_spider'
     allowed_domains = ['acm.hdu.edu.cn']
     problem_base_url = 'http://acm.hdu.edu.cn/showproblem.php?pid='
 
@@ -87,7 +87,7 @@ class HduInitSpider(CrawlSpider):
 
 
 class HduProblemSpider(Spider):
-    name = 'hdu_problem'
+    name = 'hdu_problem_spider'
     allowed_domains = ['acm.hdu.edu.cn']
 
     def __init__(self, problem_id='1000', *args, **kwargs):
@@ -119,7 +119,7 @@ class HduProblemSpider(Spider):
 
 
 class HduSubmitSpider(CrawlSpider):
-    name = 'hdu_submit'
+    name = 'hdu_submit_spider'
     allowed_domains = ['acm.hdu.edu.cn']
     login_url = 'http://acm.hdu.edu.cn/userloginex.php?action=login'
     submit_url = 'http://acm.hdu.edu.cn/submit.php?action=submit'
@@ -240,7 +240,7 @@ class HduSubmitSpider(CrawlSpider):
 
 
 class HduAccountSpider(Spider):
-    name = 'hdu_user'
+    name = 'hdu_user_spider'
     allowed_domains = ['acm.hdu.edu.cn']
     login_url = 'http://acm.hdu.edu.cn/userloginex.php?action=login'
     login_verify_url = 'http://acm.hdu.edu.cn/control_panel.php'

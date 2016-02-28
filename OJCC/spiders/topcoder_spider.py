@@ -7,7 +7,7 @@ from OJCC.items import AccountItem
 
 
 class TopcoderAccountSpider(Spider):
-    name = 'topcoder_user'
+    name = 'topcoder_user_spider'
     allowed_domains = ['community.topcoder.com']
 
     def __init__(self, username, *args, **kwargs):

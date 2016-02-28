@@ -22,7 +22,7 @@ LANGUAGE = {
 
 
 class FzuInitSpider(CrawlSpider):
-    name = 'fzu_init'
+    name = 'fzu_init_spider'
     allowed_domains = ['acm.fzu.edu.cn']
 
     start_urls = [
@@ -88,7 +88,7 @@ class FzuInitSpider(CrawlSpider):
 
 
 class FzuProblemSpider(Spider):
-    name = 'fzu_problem'
+    name = 'fzu_problem_spider'
     allowed_domains = ['acm.fzu.edu.cn']
 
     def __init__(self, problem_id='1000', *args, **kwargs):
@@ -144,7 +144,7 @@ class FzuProblemSpider(Spider):
 
 
 class FzuSubmitSpider(CrawlSpider):
-    name = 'fzu_submit'
+    name = 'fzu_submit_spider'
     allowed_domains = ['acm.fzu.edu.cn']
     login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
     submit_url = 'http://acm.fzu.edu.cn/submit.php?act=5'
@@ -276,7 +276,7 @@ class FzuSubmitSpider(CrawlSpider):
 
 
 class FzuAccountSpider(CrawlSpider):
-    name = 'fzu_user'
+    name = 'fzu_user_spider'
     allowed_domains = ['acm.fzu.edu.cn']
     login_url = 'http://acm.fzu.edu.cn/login.php?act=1&dir='
     login_verify_url = 'http://acm.fzu.edu.cn/mail.php'

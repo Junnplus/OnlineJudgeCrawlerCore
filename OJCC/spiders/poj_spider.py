@@ -36,7 +36,7 @@ LANGUAGE = {
 
 
 class PojInitSpider(CrawlSpider):
-    name = 'poj_init'
+    name = 'poj_init_spider'
     allowed_domains = ['poj.org']
 
     start_urls = [
@@ -90,7 +90,7 @@ class PojInitSpider(CrawlSpider):
 
 
 class PojProblemSpider(Spider):
-    name = 'poj_problem'
+    name = 'poj_problem_spider'
     allowed_domains = ['poj.org']
 
     def __init__(self, problem_id='1000', *args, **kwargs):
@@ -130,7 +130,7 @@ class PojProblemSpider(Spider):
 
 
 class PojSubmitSpider(CrawlSpider):
-    name = 'poj_submit'
+    name = 'poj_submit_spider'
     allowed_domains = ['poj.org']
     login_url = 'http://poj.org/login'
     submit_url = 'http://poj.org/submit'
@@ -258,7 +258,7 @@ class PojSubmitSpider(CrawlSpider):
 
 
 class PojAccountSpider(Spider):
-    name = 'poj_user'
+    name = 'poj_user_spider'
     allowed_domains = ['poj.org']
     login_url = 'http://poj.org/login'
     login_verify_url = 'http://poj.org/loginlog'

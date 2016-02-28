@@ -44,7 +44,7 @@ LANGUAGE = {
 
 
 class SdutInitSpider(CrawlSpider):
-    name = 'sdut_init'
+    name = 'sdut_init_spider'
     allowed_domains = ['acm.sdut.edu.cn']
 
     start_urls = [
@@ -89,7 +89,7 @@ class SdutInitSpider(CrawlSpider):
 
 
 class SdutProblemSpider(Spider):
-    name = 'sdut_problem'
+    name = 'sdut_problem_spider'
     allowed_domains = ['acm.sdut.edu.cn']
 
     def __init__(self, problem_id='1000', *args, **kwargs):
@@ -124,7 +124,7 @@ class SdutProblemSpider(Spider):
 
 
 class SdutSubmitSpider(CrawlSpider):
-    name = 'sdut_submit'
+    name = 'sdut_submit_spider'
     allowed_domains = ['acm.sdut.edu.cn']
     login_url = 'http://acm.sdut.edu.cn/sdutoj/login.php?action=login'
     submit_url = 'http://acm.sdut.edu.cn/sdutoj/submit.php?action=submit'
