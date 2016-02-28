@@ -1,2 +1,4 @@
 scrapy
+scrapyd
+scrapyd-client
 pymongo
