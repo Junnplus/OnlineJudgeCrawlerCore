@@ -29,7 +29,7 @@ scrapy crawl poj_init_spider
 
 ### Problem Crawl Spider
 
-> 抓取 Origin_OJ 制定题目
+> 抓取 Origin_OJ 指定题目
 
 #### Command
 ```shell
