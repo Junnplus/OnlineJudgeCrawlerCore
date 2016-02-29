@@ -1,0 +1,11 @@
+ojcc:
+    build: .
+    volumes:
+        - .:/opt/ojcc
+    links:
+        - mongo
+    ports:
+        - "6800:6800"
+
+mongo:
+    image: mongo
