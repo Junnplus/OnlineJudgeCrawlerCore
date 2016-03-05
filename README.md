@@ -124,23 +124,6 @@ def account_info(origin_oj, username, password):
     process.start()
 ```
 
-### Account Info Non Password
-
-> git checkout account-non-pw
-
-#### Command
-```shell
-scrapy crawl `origin_oj`_user -a username=''
-```
-+ argument
-    - username # sdut use argument value is userid
-
-Example:
-```shell
-scrapy crawl sdut_user -a username='15940'
-scrapy crawl poj_user -a username='sdutacm1'
-```
-
 ## Support
 
 - [POJ](http://poj.org)
