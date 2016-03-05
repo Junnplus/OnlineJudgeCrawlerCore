@@ -15,7 +15,6 @@ pyOpenSSL==0.15.1
 queuelib==1.4.2
 Scrapy==1.0.5
 scrapyd==1.1.0
-scrapyd-client==1.0.1
 service-identity==16.0.0
 six==1.10.0
 supervisor==3.2.1
