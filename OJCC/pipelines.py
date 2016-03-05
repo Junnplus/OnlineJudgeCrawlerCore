@@ -6,7 +6,6 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 import pymongo
-import json
 
 
 class MongoPipeline(object):
@@ -57,18 +56,9 @@ class MongoPipeline(object):
             )
         else:
             self.db[collection_name].update(
-                {'origin_oj': item['origin_oj'],
-                 'problem_id': item['problem_id']},
+                {
+                    'origin_oj': item['origin_oj'],
+                    'problem_id': item['problem_id']
+                },
                 dict(item), upsert=True)
-        return item
-
-
-class JsonWriterPipeline(object):
-
-    def __init__(self):
-        self.file = open('items.jl', 'wb')
-
-    def process_item(self, item, spider):
-        line = json.dumps(dict(item)) + "\n"
-        self.file.write(line)
         return item
