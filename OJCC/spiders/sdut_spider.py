@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import re
+import time
 from urllib import urlencode
+from base64 import b64decode
+from datetime import datetime
 
 from scrapy.spiders import Spider
 from scrapy.spiders import CrawlSpider
@@ -21,11 +25,6 @@ SUBMIT_TIME_XPATH = './/td[last()]/text()'
 NICKNAME_PATH = './/td/a/xmp/text()'
 RESTRICT_XPATHS = ('//*[@class="bookpage"][1]')
 RULE_REGEX = 'status\S+page=\d+'
-
-from base64 import b64decode
-from datetime import datetime
-import time
-import re
 
 LANGUAGE = {
     'gcc': 'gcc',
@@ -248,10 +247,7 @@ class SdutSubmitSpider(CrawlSpider):
 class SdutAccountSpider(Spider):
     name = 'sdut_user_spider'
     allowed_domains = ['acm.sdut.edu.cn']
-
     login_url = 'http://acm.sdut.edu.cn/sdutoj/login.php?action=login'
-    accepted_url = 'http://acm.sdut.edu.cn/sdutoj/status.php?username=\
-                   %s&pro_lang=ALL&result=1'
     start_urls = [
         'http://acm.sdut.edu.cn/sdutoj/setting.php'
     ]
@@ -259,9 +255,7 @@ class SdutAccountSpider(Spider):
     solved = {}
     is_login = False
 
-    def __init__(self,
-                 username='sdutacm1',
-                 password='sdutacm', *args, **kwargs):
+    def __init__(self, username, password, *args, **kwargs):
         super(SdutAccountSpider, self).__init__(*args, **kwargs)
 
         self.username = username
@@ -286,7 +280,6 @@ class SdutAccountSpider(Spider):
             yield self.make_requests_from_url(url)
 
     def parse(self, response):
-
         sel = Selector(response)
 
         self.item = AccountItem()
@@ -307,12 +300,8 @@ class SdutAccountSpider(Spider):
                 self.item['submit'] = sel.\
                     xpath('//div[@id="content"]/table/tr')[3].\
                     xpath('./td[6]/text()').extract()[0]
-                yield Request(
-                    self.accepted_url % self.username,
-                    callback=self.accepted
-                )
                 self.item['status'] = 'Authentication Success'
-            except Exception, e:
+            except Exception as e:
                 print e
                 self.item['status'] = 'Unknown Error'
         else:
@@ -320,32 +309,8 @@ class SdutAccountSpider(Spider):
 
         yield self.item
 
-    def accepted(self, response):
-
-        sel = Selector(response)
-
-        next_url = sel.xpath('.//div[@class="page"]/a/@href')[1].extract()
-        table_tr = sel.xpath('//table[@class="tablelist"]/tr')[1:]
-        for tr in table_tr:
-            name = tr.xpath('.//td/a/xmp/text()').extract()[0]
-            problem_id = tr.xpath('.//td[3]/a/text()').extract()[0].strip()
-            submit_time = tr.xpath('.//td/text()').extract()[-1]
-
-            if name == self.nickname:
-                self.solved[problem_id] = submit_time
-                self.item['solved'] = self.solved
-
-        if table_tr:
-            yield Request(
-                'http://' + self.allowed_domains[0] + '/sdutoj/' + next_url,
-                callback=self.accepted
-            )
-
-        yield self.item
-
 
 class SdutSolvedSpider(CrawlSpider):
-
     name = 'sdut_solved_spider'
     allowed_domains = ['acm.sdut.edu.cn']
     status_url = 'http://acm.sdut.edu.cn/sdutoj/status.php'
