@@ -8,9 +8,6 @@
 import pymongo
 import json
 
-class OjccPipeline(object):
-    def process_item(self, item, spider):
-        return item
 
 class MongoPipeline(object):
 
@@ -59,9 +56,12 @@ class MongoPipeline(object):
                 upsert=True
             )
         else:
-            self.db[collection_name].update({'origin_oj': item['origin_oj'],
-                'problem_id': item['problem_id']}, dict(item), upsert=True)
+            self.db[collection_name].update(
+                {'origin_oj': item['origin_oj'],
+                 'problem_id': item['problem_id']},
+                dict(item), upsert=True)
         return item
+
 
 class JsonWriterPipeline(object):
 

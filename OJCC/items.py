@@ -7,6 +7,7 @@
 
 import scrapy
 
+
 class ProblemItem(scrapy.Item):
 
     origin_oj = scrapy.Field()
@@ -26,6 +27,7 @@ class ProblemItem(scrapy.Item):
     accept = scrapy.Field()
     submit = scrapy.Field()
 
+
 class SolutionItem(scrapy.Item):
 
     solution_id = scrapy.Field()
@@ -39,6 +41,7 @@ class SolutionItem(scrapy.Item):
     language = scrapy.Field()
     code_length = scrapy.Field()
     submit_time = scrapy.Field()
+
 
 class AccountItem(scrapy.Item):
 
