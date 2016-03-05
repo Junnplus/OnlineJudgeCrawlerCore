@@ -11,6 +11,22 @@
 - git clone https://github.com/Junnplus/OnlineJudge_Crawler_Core.git && cd OnlineJudge_Crawler_Core
 - pip install -r requirements.txt
 
+## Deploy Scrapyd
+
+- Run scrapyd
+- Python egg
+```python
+python setup.py bdist_egg
+```
+- Add version
+```shell
+curl http://localhost:6800/addversion.json -F project=OJCC -F version=r1 -F egg=@dist/OJCC-0.1.0-py2.7.egg
+```
+
+## Usage with Scrapyd API
+
+https://scrapyd.readthedocs.org/en/latest/api.html
+
 ## Usage
 
 ### Origin_OJ Init Spider
