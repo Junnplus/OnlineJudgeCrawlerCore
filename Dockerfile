@@ -7,5 +7,4 @@ RUN pip install -r requirements.txt
 
 ADD scrapyd.conf /etc/scrapyd/scrapyd.conf
 ADD supervisord.conf /etc/supervisord.conf
-ADD supervisord /etc/init.d/supervisord
 CMD supervisord -c /etc/supervisord.conf
